@@ -23,7 +23,7 @@ engine: AsyncEngine = create_async_engine(
 )
 
 
-async def get_db() -> AsyncIterator[AsyncSession]:
+async def get_user_db() -> AsyncIterator[AsyncSession]:
     async with SessionLocal() as session:
         try:
             yield session
