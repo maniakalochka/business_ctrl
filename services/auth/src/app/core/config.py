@@ -11,7 +11,9 @@ load_dotenv(dotenv_path=env_path)
 class Settings(BaseSettings):
     # Database
     AUTH_DB_URL: str = (
-        "postgresql+asyncpg://" + "postgres:password@localhost/" + "fastapi_users_db_sqlalchemy"
+        "postgresql+asyncpg://"
+       +  "postgres:password@localhost/"
+       +  "fastapi_users_db_sqlalchemy"
     )
     TEST_AUTH_DB_URL: str = (
         "postgresql+asyncpg://"
@@ -29,7 +31,10 @@ class Settings(BaseSettings):
     CorsOrigins: str = "http://localhost:5173"
     CookieSamesite: str = "LAX"
 
-    model_config = SettingsConfigDict(env_file=env_path, env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=env_path,
+        env_file_encoding="utf-8"
+    )
 
 
 settings = Settings()
