@@ -7,11 +7,10 @@ Create Date: 2025-08-21 20:58:30.495780
 """
 
 from typing import Sequence, Union
-from fastapi_users_db_sqlalchemy.generics import GUID
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
+from fastapi_users_db_sqlalchemy.generics import GUID
 
 # revision identifiers, used by Alembic.
 revision: str = "568e0dca426d"
@@ -55,12 +54,8 @@ def upgrade() -> None:
         sa.Column("is_active", sa.Boolean(), nullable=False),
         sa.Column("is_superuser", sa.Boolean(), nullable=False),
         sa.Column("is_verified", sa.Boolean(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["supervisor_id"], ["users.id"], ondelete="SET NULL"
-        ),
-        sa.ForeignKeyConstraint(
-            ["team_id"], ["teams.id"], ondelete="SET NULL"
-        ),
+        sa.ForeignKeyConstraint(["supervisor_id"], ["users.id"], ondelete="SET NULL"),
+        sa.ForeignKeyConstraint(["team_id"], ["teams.id"], ondelete="SET NULL"),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_users_email"), "users", ["email"], unique=True)
