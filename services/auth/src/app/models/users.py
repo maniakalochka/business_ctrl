@@ -9,7 +9,7 @@ from sqlalchemy import Enum as SQLEnum
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base
+from app.db.base import Base
 
 
 class UserRole(str, enum.Enum):
@@ -25,9 +25,7 @@ class User(Base, SQLAlchemyBaseUserTableUUID):
     last_name: Mapped[Optional[str]] = mapped_column(String(100))
     phone: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
 
-    role: Mapped[UserRole] = mapped_column(
-        SQLEnum(UserRole), default=UserRole.EMPLOYEE
-    )
+    role: Mapped[UserRole] = mapped_column(SQLEnum(UserRole), default=UserRole.EMPLOYEE)
 
     team_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         ForeignKey("teams.id", ondelete="SET NULL"), nullable=True
@@ -37,14 +35,10 @@ class User(Base, SQLAlchemyBaseUserTableUUID):
         ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
 
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.now, onupdate=datetime.now
     )
 
     team = relationship("Team", back_populates="users")
-    supervisor = relationship(
-        "User", remote_side="User.id", backref="subordinates"
-    )
+    supervisor = relationship("User", remote_side="User.id", backref="subordinates")
