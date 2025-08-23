@@ -22,7 +22,7 @@ class Team(Base):
         DateTime, default=datetime.now, onupdate=datetime.now
     )
 
-    users = relationship(
+    user = relationship(
         "User",
         back_populates="team",
         passive_deletes=True,

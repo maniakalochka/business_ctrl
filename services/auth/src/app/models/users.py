@@ -18,8 +18,7 @@ class UserRole(str, enum.Enum):
     EMPLOYEE = "employee"
 
 
-class User(Base, SQLAlchemyBaseUserTableUUID):
-    __tablename__ = "users"
+class User(SQLAlchemyBaseUserTableUUID, Base):
 
     first_name: Mapped[Optional[str]] = mapped_column(String(100))
     last_name: Mapped[Optional[str]] = mapped_column(String(100))
@@ -32,7 +31,7 @@ class User(Base, SQLAlchemyBaseUserTableUUID):
     )
 
     supervisor_id: Mapped[Optional[uuid.UUID]] = mapped_column(
-        ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+        ForeignKey("user.id", ondelete="SET NULL"), nullable=True
     )
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
@@ -40,5 +39,5 @@ class User(Base, SQLAlchemyBaseUserTableUUID):
         DateTime, default=datetime.now, onupdate=datetime.now
     )
 
-    team = relationship("Team", back_populates="users")
+    team = relationship("Team", back_populates="user")
     supervisor = relationship("User", remote_side="User.id", backref="subordinates")
