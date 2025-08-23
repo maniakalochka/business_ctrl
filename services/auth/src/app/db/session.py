@@ -6,7 +6,7 @@ from sqlalchemy.pool import NullPool
 from app.core.config import settings
 
 DATABASE_URL = settings.TEST_AUTH_DB_URL if settings.MODE == "TEST" else settings.AUTH_DB_URL
-DATABASE_PARAMS = {"poolclass": NullPool}  # удобно для тестов, без пула
+DATABASE_PARAMS = {"poolclass": NullPool}
 
 engine = create_async_engine(url=DATABASE_URL, echo=False, **DATABASE_PARAMS)
 
@@ -21,6 +21,6 @@ async def get_async_session() -> AsyncIterator[AsyncSession]:
     async with SessionLocal() as session:
         try:
             yield session
-        except Exception:
+        except Exception as e:
             await session.rollback()
-            raise
+            raise e
