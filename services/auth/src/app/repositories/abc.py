@@ -11,16 +11,16 @@ class AbstactRepository(ABC):
 
     @abstractmethod
     async def get(self, id_: Any):
-        raise NotImplementedError
+        raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
     async def list(self, *, limit: int, offset: int) -> Sequence[Any]:
-        raise NotImplementedError
+        raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
     async def add(self, obj: Any) -> Any:
-        raise NotImplementedError
+        raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
     async def delete(self, obj: Any) -> None:
-        raise NotImplementedError
+        raise NotImplementedError("Subclasses must implement this method")
