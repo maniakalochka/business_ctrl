@@ -5,7 +5,7 @@ from fastapi_users import schemas as fu_schemas
 from pydantic import ConfigDict
 
 from app.models.users import UserRole
-from app.schemas.alias_gen import to_camel
+from app.utils.alias_gen import to_camel
 
 
 class UserRead(fu_schemas.BaseUser[uuid.UUID]):

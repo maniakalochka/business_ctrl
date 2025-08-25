@@ -10,5 +10,5 @@ class UserRepository(SQLAlchemyRepository):
         super().__init__(session, User)
 
     async def by_email(self, email: str) -> User | None:
-        stmt = select(User).where(User.email == email) # type: ignore[reportArgumentType]
+        stmt = select(User).where(User.email == email)  # type: ignore[reportArgumentType]
         return await self.session.scalar(stmt)
