@@ -24,12 +24,7 @@ class Settings(BaseSettings):
     MODE: Literal["DEV", "TEST"] = "TEST"
 
     # Auth
-    SECRET_KEY: str = "super-secret-key"
-    ALGORITHM: str = "HS256"
-    AccessTtlSeconds: int = 900
-    RefreshTtlSeconds: int = 604800
-    CorsOrigins: str = "http://localhost:5173"
-    CookieSamesite: str = "LAX"
+    ACCESS_TOKEN_LIFETIME_SECONDS: int
 
     model_config = SettingsConfigDict(
         env_file=env_path,
