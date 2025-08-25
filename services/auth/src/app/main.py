@@ -1,12 +1,29 @@
+from contextlib import asynccontextmanager
 import uvicorn
+import logging
 from fastapi import FastAPI
 
 from app.auth.routers import (auth_router, register_router, reset_pwd_router,
                               users_router)
+from app.db.session import engine, SessionLocal
+
+
+log = logging.getLogger(__name__)
+
+@asynccontextmanager  # type: ignore
+async def lifespan(app: FastAPI):
+    log.info("Starting up...")
+    app.state.engine = engine
+    app.state.session_factory = SessionLocal
+    yield
+    log.info("Shutting down...")
+    await engine.dispose()
+
 
 app = FastAPI(
     title="Auth Service",
     description="Service for user authentication",
+    lifespan=lifespan,
 )
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
