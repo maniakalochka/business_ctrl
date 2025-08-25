@@ -1,14 +1,17 @@
-from typing import AsyncIterator
 import uuid
+from typing import AsyncIterator
+
 from fastapi import Depends
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
-from fastapi_users_db_sqlalchemy.access_token import SQLAlchemyAccessTokenDatabase
+from fastapi_users_db_sqlalchemy.access_token import \
+    SQLAlchemyAccessTokenDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.session import get_async_session
-from app.models.users import User
-from app.models.access_token import AccessToken
 from app.auth.manager import UserManager
+from app.db.session import get_async_session
+from app.models.access_token import AccessToken
+from app.models.users import User
+
 
 async def get_user_db(
     session: AsyncSession = Depends(get_async_session),

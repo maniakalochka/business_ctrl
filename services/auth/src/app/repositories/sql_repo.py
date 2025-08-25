@@ -1,7 +1,10 @@
 from typing import Any, Sequence
-from sqlalchemy.ext.asyncio import AsyncSession
+
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.repositories.abc import AbstactRepository
+
 
 class SQLAlchemyRepository(AbstactRepository):
     def __init__(self, session: AsyncSession, model: Any):

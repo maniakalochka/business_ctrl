@@ -1,13 +1,15 @@
-import uuid
 import logging
-from fastapi_users import BaseUserManager, FastAPIUsers
-from fastapi import Request
-
-from app.models.users import User
-from .dependencies import get_user_manager
-from .backends import auth_backend_bearer
-from app.core.config import settings
+import uuid
 from typing import Optional
+
+from fastapi import Request
+from fastapi_users import BaseUserManager, FastAPIUsers
+
+from app.core.config import settings
+from app.models.users import User
+
+from .backends import auth_backend_bearer
+from .dependencies import get_user_manager
 
 log = logging.getLogger(__name__)
 

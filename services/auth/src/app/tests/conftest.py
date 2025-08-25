@@ -1,11 +1,11 @@
 import httpx
 import pytest_asyncio
 from asgi_lifespan import LifespanManager
+from main import app
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.core.config import settings
 from app.db import SessionLocal
-from main import app
 from app.db.base import Base
 
 

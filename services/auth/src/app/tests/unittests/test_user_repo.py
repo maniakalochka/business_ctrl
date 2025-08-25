@@ -1,10 +1,11 @@
 import uuid
+
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.repositories import UserRepository
-from app.models.users import User
 from app.models.teams import Team
+from app.models.users import User
+from app.repositories import UserRepository
 
 pytestmark = pytest.mark.asyncio
 
