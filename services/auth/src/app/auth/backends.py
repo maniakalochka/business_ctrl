@@ -3,7 +3,7 @@ from fastapi_users.authentication import AuthenticationBackend
 
 from app.auth.strategies import get_database_strategy
 
-from .transports import bearer_transport
+from app.auth.transports import bearer_transport
 
 auth_backend_bearer = AuthenticationBackend(
     name="bearer-db",

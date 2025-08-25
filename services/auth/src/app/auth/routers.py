@@ -1,7 +1,7 @@
 from app.auth.backends import auth_backend_bearer
 from app.schemas.users import UserCreate, UserRead, UserUpdate
 
-from .manager import fastapi_users
+from app.auth.manager import fastapi_users
 
 auth_router = fastapi_users.get_auth_router(auth_backend_bearer)
 register_router = fastapi_users.get_register_router(UserRead, UserCreate)

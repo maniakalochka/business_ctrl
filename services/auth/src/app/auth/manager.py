@@ -2,14 +2,14 @@ import logging
 import uuid
 from typing import Optional
 
-from fastapi import Request
+from fastapi import Request, Depends
 from fastapi_users import BaseUserManager, FastAPIUsers
 
 from app.core.config import settings
 from app.models.users import User
 
-from .backends import auth_backend_bearer
-from .dependencies import get_user_manager
+from app.auth.backends import auth_backend_bearer
+from app.auth.dependencies import get_user_db
 
 log = logging.getLogger(__name__)
 
@@ -30,6 +30,8 @@ class UserManager(BaseUserManager[User, uuid.UUID]):
     ):
         log.warning("Verification requested for user %r. Verification token: %r", user.id, token)
 
+async def get_user_manager(user_db=Depends(get_user_db)):
+    yield UserManager(user_db)
 
 fastapi_users = FastAPIUsers[User, uuid.UUID](
     get_user_manager,
