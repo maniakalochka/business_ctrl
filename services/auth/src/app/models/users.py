@@ -10,6 +10,7 @@ from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+from app.models.teams import Team
 
 
 class UserRole(str, enum.Enum):
