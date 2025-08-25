@@ -25,6 +25,8 @@ class Settings(BaseSettings):
 
     # Auth
     ACCESS_TOKEN_LIFETIME_SECONDS: int
+    RESET_PASSWORD_TOKEN_SECRET: str
+    VERIFICATION_TOKEN_SECRET: str
 
     model_config = SettingsConfigDict(
         env_file=env_path,
@@ -32,4 +34,4 @@ class Settings(BaseSettings):
     )
 
 
-settings = Settings()
+settings = Settings()  # type: ignore

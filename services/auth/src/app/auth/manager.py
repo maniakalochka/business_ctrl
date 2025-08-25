@@ -1,26 +1,33 @@
 import uuid
-from fastapi import Depends
+import logging
 from fastapi_users import BaseUserManager, FastAPIUsers
-from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Request
 
-from app.db.session import get_async_session
 from app.models.users import User
+from .dependencies import get_user_manager
 from .backends import auth_backend_bearer
-from typing import AsyncIterator
+from app.core.config import settings
+from typing import Optional
 
-
-async def get_user_db(
-    session: AsyncSession = Depends(get_async_session),
-) -> AsyncIterator[SQLAlchemyUserDatabase[User, uuid.UUID]]:
-    yield SQLAlchemyUserDatabase(session, User)
+log = logging.getLogger(__name__)
 
 class UserManager(BaseUserManager[User, uuid.UUID]):
-    reset_password_token_secret = "unused-here"  # TODO: change it
-    verification_token_secret = "unused-here"  # TODO: change it
+    reset_password_token_secret = settings.RESET_PASSWORD_TOKEN_SECRET
+    verification_token_secret = settings.VERIFICATION_TOKEN_SECRET
 
-async def get_user_manager(user_db=Depends(get_user_db)):
-    yield UserManager(user_db)
+    async def on_after_register(self, user: User, request: Optional[Request] = None):
+        log.warning("User %r has registered.", user.id)
+
+    async def on_after_forgot_password(
+        self, user: User, token: str, request: Optional[Request] = None
+    ):
+        log.warning("User %r has forgot their password. Reset token: %r", user.id, token)
+
+    async def on_after_request_verify(
+        self, user: User, token: str, request: Optional[Request] = None
+    ):
+        log.warning("Verification requested for user %r. Verification token: %r", user.id, token)
+
 
 fastapi_users = FastAPIUsers[User, uuid.UUID](
     get_user_manager,
