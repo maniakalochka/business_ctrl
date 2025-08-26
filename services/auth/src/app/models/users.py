@@ -10,7 +10,6 @@ from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-from app.models.teams import Team
 
 
 class UserRole(str, enum.Enum):
@@ -27,10 +26,6 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
 
     role: Mapped[UserRole] = mapped_column(SQLEnum(UserRole), default=UserRole.EMPLOYEE)
 
-    team_id: Mapped[Optional[uuid.UUID]] = mapped_column(
-        ForeignKey("teams.id", ondelete="SET NULL"), nullable=True
-    )
-
     supervisor_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         ForeignKey("user.id", ondelete="SET NULL"), nullable=True
     )
@@ -40,5 +35,4 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
         DateTime, default=datetime.now, onupdate=datetime.now
     )
 
-    team = relationship("Team", back_populates="user")
     supervisor = relationship("User", remote_side="User.id", backref="subordinates")

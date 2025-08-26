@@ -5,7 +5,7 @@ from typing import Optional
 from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, FastAPIUsers
 
-from app.auth.backends import auth_backend_bearer
+from app.auth.backends import auth_backend
 from app.auth.dependencies import get_user_db
 from app.core.config import settings
 from app.models.users import User
@@ -29,12 +29,14 @@ class UserManager(BaseUserManager[User, uuid.UUID]):
     ):
         log.warning("Verification requested for user %r. Verification token: %r", user.id, token)
 
+
 async def get_user_manager(user_db=Depends(get_user_db)):
     yield UserManager(user_db)
 
+
 fastapi_users = FastAPIUsers[User, uuid.UUID](
     get_user_manager,
-    [auth_backend_bearer],
+    [auth_backend],
 )
 
 current_active_user = fastapi_users.current_user(active=True)

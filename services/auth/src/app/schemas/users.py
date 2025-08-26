@@ -13,7 +13,6 @@ class UserRead(fu_schemas.BaseUser[uuid.UUID]):
     last_name: Optional[str] = None
     phone: Optional[str] = None
     role: UserRole = UserRole.EMPLOYEE
-    team_id: Optional[uuid.UUID] = None
     supervisor_id: Optional[uuid.UUID] = None
 
 
@@ -28,7 +27,6 @@ class UserCreate(fu_schemas.BaseUserCreate):
     last_name: Optional[str] = None
     phone: Optional[str] = None
     role: UserRole = UserRole.EMPLOYEE
-    team_id: Optional[uuid.UUID] = None
     supervisor_id: Optional[uuid.UUID] = None
 
     model_config = ConfigDict(
@@ -41,7 +39,6 @@ class UserUpdate(fu_schemas.BaseUserUpdate):
     last_name: Optional[str] = None
     phone: Optional[str] = None
     role: Optional[UserRole] = None
-    team_id: Optional[uuid.UUID] = None
     supervisor_id: Optional[uuid.UUID] = None
 
     model_config = ConfigDict(

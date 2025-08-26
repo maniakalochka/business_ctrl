@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_LIFETIME_SECONDS: int
     RESET_PASSWORD_TOKEN_SECRET: str
     VERIFICATION_TOKEN_SECRET: str
+    SECRET: str
+    ALGO: str = 'HS256'
 
     model_config = SettingsConfigDict(
         env_file=".env",
