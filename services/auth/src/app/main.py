@@ -2,11 +2,14 @@ import logging
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from fastapi.security import HTTPBearer
 
 from app.auth.routers import (auth_router, register_router, reset_pwd_router,
                               users_router)
 from app.db.session import SessionLocal, engine
+
+http_bearer = HTTPBearer(auto_error=False)
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +29,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-app.include_router(auth_router, prefix="/auth/jwt", tags=["auth"])
+app.include_router(auth_router, prefix="/auth/jwt", tags=["auth"], dependencies=[Depends(http_bearer)])
 app.include_router(register_router, prefix="/auth", tags=["auth"])
 app.include_router(reset_pwd_router, prefix="/auth", tags=["auth"])
 app.include_router(users_router, prefix="/users", tags=["users"])
