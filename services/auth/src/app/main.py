@@ -1,12 +1,12 @@
-from contextlib import asynccontextmanager
-import uvicorn
 import logging
+from contextlib import asynccontextmanager
+
+import uvicorn
 from fastapi import FastAPI
 
 from app.auth.routers import (auth_router, register_router, reset_pwd_router,
                               users_router)
-from app.db.session import engine, SessionLocal
-
+from app.db.session import SessionLocal, engine
 
 log = logging.getLogger(__name__)
 

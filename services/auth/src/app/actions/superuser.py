@@ -5,11 +5,12 @@ Create a superuser (or a common user)
 import asyncio
 import contextlib
 
-from app.db import get_async_session
-from app.auth.dependencies import get_user_db
-from app.schemas.users import UserCreate
-from app.auth.manager import get_user_manager
 from fastapi_users.exceptions import UserAlreadyExists
+
+from app.auth.dependencies import get_user_db
+from app.auth.manager import get_user_manager
+from app.db import get_async_session
+from app.schemas.users import UserCreate
 
 get_async_session_context = contextlib.asynccontextmanager(get_async_session)
 get_user_db_context = contextlib.asynccontextmanager(get_user_db)
