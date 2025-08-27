@@ -6,7 +6,7 @@ from fastapi import FastAPI, Depends
 from fastapi.security import HTTPBearer
 
 from app.auth.routers import (auth_router, register_router, reset_pwd_router,
-                              users_router)
+                              users_router, verify_router)
 from app.db.session import SessionLocal, engine
 
 http_bearer = HTTPBearer(auto_error=False)
@@ -33,7 +33,7 @@ app.include_router(auth_router, prefix="/auth/jwt", tags=["auth"], dependencies=
 app.include_router(register_router, prefix="/auth", tags=["auth"])
 app.include_router(reset_pwd_router, prefix="/auth", tags=["auth"])
 app.include_router(users_router, prefix="/users", tags=["users"])
-
+app.include_router(verify_router, prefix="/auth", tags=["auth"])
 
 
 if __name__ == "__main__":

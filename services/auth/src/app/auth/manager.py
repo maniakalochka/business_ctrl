@@ -29,6 +29,12 @@ class UserManager(BaseUserManager[User, uuid.UUID]):
     ):
         log.warning("Verification requested for user %r. Verification token: %r", user.id, token)
 
+    def parse_id(
+        self,
+        value: str,
+    ) -> uuid.UUID:
+        return uuid.UUID(value)
+
 
 async def get_user_manager(user_db=Depends(get_user_db)):
     yield UserManager(user_db)
