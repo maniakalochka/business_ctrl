@@ -1,9 +1,27 @@
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from typing import AsyncIterator
 
-from app.db.base import engine
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine)
+from sqlalchemy.pool import NullPool
+
+from app.core.config import settings
+
+DATABASE_URL = settings.TEST_COMPANY_DB_URL if settings.MODE == "TEST" else settings.COMPANY_DB_URL
+DATABASE_PARAMS = {"poolclass": NullPool}
+
+engine = create_async_engine(url=DATABASE_URL, echo=False, **DATABASE_PARAMS)
 
 SessionLocal = async_sessionmaker(
     bind=engine,
-    class_=async_sessionmaker,
-    expire_on_commit=True,
+    class_=AsyncSession,
+    expire_on_commit=False,
 )
+
+
+async def get_async_session() -> AsyncIterator[AsyncSession]:
+    async with SessionLocal() as session:
+        try:
+            yield session
+        except Exception as e:
+            await session.rollback()
+            raise e

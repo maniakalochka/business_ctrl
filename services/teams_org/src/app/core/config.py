@@ -8,9 +8,9 @@ class Settings(BaseSettings):
     COMPANY_DB_URL: str
     TEST_COMPANY_DB_URL: str
 
-    MODE: Literal["DEV", "TEST"] = "DEV"
+    MODE: Literal["DEV", "TEST"] = "TEST"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
-settings = Settings()
+settings = Settings()  # type: ignore
