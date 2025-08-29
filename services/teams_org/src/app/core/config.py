@@ -10,6 +10,8 @@ class Settings(BaseSettings):
 
     MODE: Literal["DEV", "TEST"] = "TEST"
 
+    SECRET: str
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
