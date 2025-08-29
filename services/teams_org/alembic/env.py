@@ -1,74 +1,67 @@
+import asyncio
+import os
+import sys
 from logging.config import fileConfig
-
 from alembic import context
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import pool
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+SRC_DIR = os.path.join(BASE_DIR, "src")
+if SRC_DIR not in sys.path:
+    sys.path.insert(0, SRC_DIR)
+
+from app.core.config import settings  # type: ignore
+from app.db.base import Base  # type: ignore
+from app.models.teams import Team  # type: ignore
+from app.models.companies import Company  # type: ignore
+from app.models.membership import Membership  # type: ignore
+
 config = context.config
+DB_URL = getattr(settings, "COMPANY_DB_URL", None) or getattr(settings, "TEST_COMPANY_DB_URL", None)
+if DB_URL:
+    config.set_main_option("sqlalchemy.url", DB_URL)
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = None
 
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
-
+target_metadata = Base.metadata
+if not target_metadata.tables:
+    raise RuntimeError("target_metadata.tables is empty")
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode.
-
-    This configures the context with just a URL
-    and not an Engine, though an Engine is acceptable
-    here as well.  By skipping the Engine creation
-    we don't even need a DBAPI to be available.
-
-    Calls to context.execute() here emit the given string to the
-    script output.
-
-    """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        compare_type=True,
+        compare_server_default=True,
     )
-
     with context.begin_transaction():
         context.run_migrations()
 
-
-def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
-
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
-
-    """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
+def do_run_migrations(connection):
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        compare_type=True,
+        compare_server_default=True,
     )
+    with context.begin_transaction():
+        context.run_migrations()
 
+async def run_migrations_online() -> None:
+    url = config.get_main_option("sqlalchemy.url") or DB_URL
+    if url and url.startswith("postgresql+asyncpg"):
+        url = url.replace("postgresql+asyncpg", "postgresql+psycopg2")
+    from sqlalchemy import create_engine
+    connectable = create_engine(url, poolclass=pool.NullPool)  # type: ignore
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
-
-        with context.begin_transaction():
-            context.run_migrations()
-
+        do_run_migrations(connection)
 
 if context.is_offline_mode():
     run_migrations_offline()
 else:
-    run_migrations_online()
+    asyncio.run(run_migrations_online())
