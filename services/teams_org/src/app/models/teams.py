@@ -16,12 +16,13 @@ if TYPE_CHECKING:
 
 class Team(Base):
     __tablename__ = "teams"
-    __table_args__ = (UniqueConstraint("companies_id", "name", name="uq_team_company_name"), {"schema": "teams_org"})
+    __table_args__ = (UniqueConstraint("companies_id", "name", name="uq_team_company_name"), {"schema": "public"})
 
     name: Mapped[str] = mapped_column(String(150))
     slug: Mapped[str] = mapped_column(String(150))
+    owner_user_id: Mapped[uuid.UUID | None] = mapped_column(nullable=True)
     companies_id: Mapped[uuid.UUID] = mapped_column(
-            ForeignKey("teams_org.companies.id", ondelete="CASCADE"), nullable=False
+            ForeignKey("public.companies.id", ondelete="CASCADE"), nullable=False
         )
 
     memberships: Mapped[list["Membership"]] = relationship(

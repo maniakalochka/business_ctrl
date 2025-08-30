@@ -14,7 +14,7 @@ from app.core.config import settings  # type: ignore
 from app.db.base import Base  # type: ignore
 from app.models.teams import Team  # type: ignore
 from app.models.companies import Company  # type: ignore
-from app.models.membership import Membership  # type: ignore
+from app.models.memberships import Membership  # type: ignore
 
 config = context.config
 DB_URL = getattr(settings, "COMPANY_DB_URL", None) or getattr(settings, "TEST_COMPANY_DB_URL", None)

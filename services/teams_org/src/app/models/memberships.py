@@ -27,10 +27,10 @@ class Membership(Base):
     __tablename__ = "memberships"
     __table_args__ = (
         UniqueConstraint("team_id", "user_id", name="uq_membership_team_user"),
-        {"schema": "teams_org"},
+        {"schema": "public"},
     )
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    team_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("teams_org.teams.id", ondelete="CASCADE"))
+    team_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("public.teams.id", ondelete="CASCADE"))
     user_id: Mapped[uuid.UUID] = mapped_column()
     role: Mapped[TeamRole] = mapped_column(SQLEnum(TeamRole), default=TeamRole.MEMBER)
     status: Mapped[MembershipStatus] = mapped_column(SQLEnum(MembershipStatus), default=MembershipStatus.ACTIVE)

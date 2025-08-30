@@ -1,11 +1,12 @@
 """init schema
 
 Revision ID: 65c041660cd6
-Revises: 
+Revises:
 Create Date: 2025-08-28 21:55:34.058675
 
 """
 from typing import Sequence, Union
+from sqlalchemy import text
 
 from alembic import op
 import sqlalchemy as sa
@@ -32,7 +33,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('slug'),
     sa.UniqueConstraint('slug', name='uq_companies_slug'),
-    schema='teams_org'
+    schema='public'
     )
     op.create_table('teams',
     sa.Column('name', sa.String(length=150), nullable=False),
@@ -42,10 +43,10 @@ def upgrade() -> None:
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
-    sa.ForeignKeyConstraint(['companies_id'], ['teams_org.companies.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['companies_id'], ['public.companies.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('companies_id', 'name', name='uq_team_company_name'),
-    schema='teams_org'
+    schema='public'
     )
     op.create_table('memberships',
     sa.Column('id', sa.Uuid(), nullable=False),
@@ -59,10 +60,10 @@ def upgrade() -> None:
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
-    sa.ForeignKeyConstraint(['team_id'], ['teams_org.teams.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['team_id'], ['public.teams.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('team_id', 'user_id', name='uq_membership_team_user'),
-    schema='teams_org'
+    schema='public'
     )
     # ### end Alembic commands ###
 

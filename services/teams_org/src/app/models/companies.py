@@ -14,7 +14,7 @@ class Company(Base):
     __tablename__ = "companies"
     __table_args__ = (UniqueConstraint(
         "slug",
-        name="uq_companies_slug"), {"schema": "teams_org"},)
+        name="uq_companies_slug"), {"schema": "public"},)
 
     name: Mapped[str] = mapped_column(String(150))
     slug: Mapped[str] = mapped_column(String(150), unique=True)
