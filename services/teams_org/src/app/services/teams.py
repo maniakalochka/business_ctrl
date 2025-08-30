@@ -12,11 +12,14 @@ class TeamService:
         self._teams = teams
         self._memberships = memberships
 
-    async def create(self, *, company_id: UUID, name: str, lead_user_id: UUID | None = None):
+    async def get(self, id_: UUID):
+        return await self._companies.get(id_)
+
+    async def create(self, *, company_id: UUID, name: str, owner_user_id: UUID | None = None):
         company = await self._companies.get(company_id)
         if not company:
             raise NotFound("Компания не найдена")
-        return await self._teams.create_team_atomic(company_id=company_id, name=name, lead_user_id=lead_user_id)
+        return await self._teams.create_team_atomic(company_id=company_id, name=name, owner_user_id=owner_user_id)
 
     async def rename(self, *, team_id: UUID, new_name: str) -> None:
         team = await self._teams.get(team_id)

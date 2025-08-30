@@ -9,16 +9,16 @@ class TestTeamService:
     async def test_create_team_success(self, service):
         company_id = uuid4()
         name = "Test Team"
-        lead_user_id = uuid4()
+        owner_user_id = uuid4()
 
         service._companies.get.return_value = {"id": company_id}
         service._teams.create_team_atomic.return_value = {"id": uuid4(), "name": name}
 
-        result = await service.create(company_id=company_id, name=name, lead_user_id=lead_user_id)
+        result = await service.create(company_id=company_id, name=name, owner_user_id=owner_user_id)
 
         service._companies.get.assert_awaited_once_with(company_id)
         service._teams.create_team_atomic.assert_awaited_once_with(
-            company_id=company_id, name=name, lead_user_id=lead_user_id
+            company_id=company_id, name=name, owner_user_id=owner_user_id
         )
         assert result["name"] == name
 

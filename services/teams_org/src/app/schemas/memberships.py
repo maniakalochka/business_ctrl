@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from uuid import UUID
 from datetime import datetime
 from typing import Optional
-from app.models.membership import MembershipStatus, TeamRole
+from app.models.memberships import MembershipStatus, TeamRole
 
 
 class MembershipBase(BaseModel):

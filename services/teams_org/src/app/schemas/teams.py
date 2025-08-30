@@ -10,6 +10,7 @@ class TeamBase(BaseModel):
 
 class TeamCreate(TeamBase):
     companies_id: UUID = Field(..., description="ID компании, к которой относится команда")
+    owner_user_id: Optional[UUID] = Field(None, description="ID пользователя-владельца команды")
 
 
 class TeamRead(TeamBase):
