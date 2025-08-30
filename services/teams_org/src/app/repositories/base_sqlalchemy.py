@@ -3,13 +3,12 @@ from typing import Any, Sequence
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.repositories.abc import AbstactRepository
+from app.repositories.base import AbstractRepository
 
 
-class SQLAlchemyRepository(AbstactRepository):
+class SQLAlchemyRepository(AbstractRepository):
     def __init__(self, session: AsyncSession, model: Any):
-        self.session = session
-        self.model = model
+        super().__init__(session, model)
 
     async def get(self, id_: Any):
         return await self.session.get(self.model, id_)

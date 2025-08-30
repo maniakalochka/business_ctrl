@@ -4,7 +4,7 @@ from typing import Any, Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-class AbstactRepository(ABC):
+class AbstractRepository(ABC):
     def __init__(self, session: AsyncSession, model: Any):
         self.session = session
         self.model = model
