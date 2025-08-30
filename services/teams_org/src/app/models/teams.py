@@ -11,7 +11,7 @@ from sqlalchemy.orm import relationship
 
 
 if TYPE_CHECKING:
-    from app.models.membership import Membership
+    from app.models.memberships import Membership
     from app.models.companies import Company
 
 class Team(Base):
