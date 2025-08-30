@@ -1,7 +1,6 @@
 import uuid
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String
 from datetime import datetime
 
 
