@@ -27,10 +27,10 @@ class TeamRepository(SQLAlchemyRepository):
         res = await self.session.execute(stmt)
         return res.scalars().all()
 
-    async def create_team_atomic(self, *, company_id: UUID, name: str, lead_user_id: UUID | None) -> Team:
+    async def create_team_atomic(self, *, company_id: UUID, name: str, owner_user_id: UUID | None) -> Team:
         try:
             async with self.session.begin():
-                team = Team(company_id=company_id, name=name, lead_user_id=lead_user_id)  # type: ignore[call-arg]
+                team = Team(company_id=company_id, name=name, owner_user_id=owner_user_id)  # type: ignore[call-arg]
                 self.session.add(team)
             return team
         except IntegrityError as e:
