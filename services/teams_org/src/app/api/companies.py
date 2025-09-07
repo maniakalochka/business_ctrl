@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.services.companies import CompanyService
-from app.schemas.companies import CompanyCreate, CompanyRead, CompanyUpdate
+from app.schemas.companies import CompanyRead, CompanyUpdate
 from app.schemas.principal import Principal
 from app.auth.deps import get_current_principal
 from app.services.deps import company_service_dep
@@ -11,7 +11,7 @@ from app.exceptions.exceptions import AlreadyExists
 cmp_router = APIRouter(tags=["companies"])
 
 
-@cmp_router.post("/", response_model=CompanyCreate, status_code=status.HTTP_201_CREATED)
+@cmp_router.post("/", response_model=CompanyRead, status_code=status.HTTP_201_CREATED)
 async def create_company(
     name: str,
     principal: Principal = Depends(get_current_principal),
