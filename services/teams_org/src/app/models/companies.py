@@ -1,10 +1,11 @@
 import uuid
 from typing import TYPE_CHECKING
 
-from sqlalchemy import String, UniqueConstraint
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.db.base import Base
 
+from app.db.base import Base
+from app.models.memberships import Membership
 
 if TYPE_CHECKING:
     from app.models.teams import Team
@@ -12,16 +13,19 @@ if TYPE_CHECKING:
 
 class Company(Base):
     __tablename__ = "companies"
-    __table_args__ = (UniqueConstraint(
-        "slug",
-        name="uq_companies_slug"), {"schema": "public"},)
 
-    name: Mapped[str] = mapped_column(String(150))
-    slug: Mapped[str] = mapped_column(String(150), unique=True)
+    name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
     owner_user_id: Mapped[uuid.UUID] = mapped_column(default=None, nullable=True)
 
+    memberships: Mapped[list["Membership"]] = relationship(
+        "Membership",
+        back_populates="companies",
+        cascade="all, delete-orphan",
+    )
+
     teams: Mapped[list["Team"]] = relationship(
-            back_populates="company",
-            cascade="all, delete-orphan",
-            lazy="selectin",
-        )
+        "Team",
+        back_populates="companies",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
