@@ -11,8 +11,8 @@ class CompanyService:
         self._companies = companies
         self._teams = teams
 
-    async def create(self, *, name: str):
-        return await self._companies.create_atomic(name=name)
+    async def create(self, *, name: str, owner_id: UUID):
+        return await self._companies.create_atomic(name=name, owner_id=owner_id)
 
     async def activate(self, company_id: UUID) -> None:
         company = await self._companies.get(company_id)
@@ -26,7 +26,9 @@ class CompanyService:
             raise NotFound("Компания не найдена")
         await self._companies.set_active_atomic(company_id, False)
 
-    async def list(self, *, limit: int = 100, offset: int = 0, is_active: bool | None = None) -> Sequence:
+    async def list(
+        self, *, limit: int = 100, offset: int = 0, is_active: bool | None = None
+    ) -> Sequence:
         return await self._companies.list(is_active=is_active)
 
     async def list_teams(
@@ -40,4 +42,6 @@ class CompanyService:
         company = await self._companies.get(company_id)
         if not company:
             raise NotFound("Компания не найдена")
-        return await self._teams.list_by_company(company_id, only_active=only_active, limit=limit, offset=offset)
+        return await self._teams.list_by_company(
+            company_id, only_active=only_active, limit=limit, offset=offset
+        )
