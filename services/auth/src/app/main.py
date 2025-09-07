@@ -1,4 +1,5 @@
 import logging
+import redis.asyncio as redis
 from contextlib import asynccontextmanager
 
 import uvicorn
@@ -8,6 +9,7 @@ from fastapi.security import HTTPBearer
 from app.auth.routers import (auth_router, register_router, reset_pwd_router,
                               users_router, verify_router)
 from app.db.session import SessionLocal, engine
+from app.core.config import settings
 
 http_bearer = HTTPBearer(auto_error=False)
 
@@ -18,6 +20,7 @@ async def lifespan(app: FastAPI):
     log.info("Starting up...")
     app.state.engine = engine
     app.state.session_factory = SessionLocal
+    app.state.redis = redis.from_url(settings.REDIS_URL, decode_responses=True)
     yield
     log.info("Shutting down...")
     await engine.dispose()

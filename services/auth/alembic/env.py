@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 from logging.config import fileConfig
+
 from alembic import context
 from sqlalchemy import pool
 
@@ -27,6 +28,7 @@ assert User.metadata is Base.metadata
 target_metadata = Base.metadata
 if not target_metadata.tables:
     raise RuntimeError("target_metadata.tables is empty")
+
 
 def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")
