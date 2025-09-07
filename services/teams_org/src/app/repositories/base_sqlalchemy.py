@@ -10,9 +10,6 @@ class SQLAlchemyRepository(AbstractRepository):
     def __init__(self, session: AsyncSession, model: Any):
         super().__init__(session, model)
 
-    async def get(self, id_: Any):
-        return await self.session.get(self.model, id_)
-
     async def list(self, *, limit: int = 100, offset: int = 0) -> Sequence[Any]:
         stmt = select(self.model).limit(limit).offset(offset)
         return (await self.session.execute(stmt)).scalars().all()

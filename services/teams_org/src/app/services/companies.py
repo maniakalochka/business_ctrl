@@ -19,17 +19,19 @@ class CompanyService:
     async def create(self, *, name: str, owner_id: UUID) -> Company:
         return await self._companies.create_atomic(name=name, owner_id=owner_id)
 
-    async def activate(self, company_id: UUID) -> None:
-        company = await self._companies.get(company_id)
+    async def activate(self, company_name: str) -> None:
+        company = await self._companies.get_by_name(name=company_name)
         if not company:
             raise NotFound("Компания не найдена")
-        await self._companies.set_active_atomic(company_id, True)
+        await self._companies.set_active_atomic(
+            company_name=company_name, is_active=True
+        )
 
-    async def deactivate(self, company_id: UUID) -> None:
-        company = await self._companies.get(company_id)
+    async def deactivate(self, company_name: str) -> None:
+        company = await self._companies.get_by_name(name=company_name)
         if not company:
             raise NotFound("Компания не найдена")
-        await self._companies.set_active_atomic(company_id, False)
+        await self._companies.set_active_atomic(company_name, False)
 
     async def list(
         self, *, limit: int = 100, offset: int = 0, is_active: bool | None = None

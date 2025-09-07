@@ -14,17 +14,6 @@ class CompanyRepository(SQLAlchemyRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    # async def get(self, company_id: UUID) -> Company | None:
-    #     return await self.session.get(Company, company_id)
-    # async def get_by_user_id(self, user_id: UUID) -> Company | None:
-    #     stmt = (
-    #         select(Company)
-    #         .join_from(Company, Company.memberships)
-    #         .where(Company.memberships.any(Company.memberships.user_id == user_id))
-    #     )
-    #     res = await self.session.execute(stmt)
-    #     return res.scalar_one_or_none()
-
     async def get_by_name(self, name: str) -> Company | None:
         stmt = select(Company).where(Company.name == name)
         res = await self.session.execute(stmt)
@@ -48,11 +37,11 @@ class CompanyRepository(SQLAlchemyRepository):
         except IntegrityError as e:
             raise AlreadyExists from e
 
-    async def set_active_atomic(self, company_id: UUID, is_active: bool) -> None:
+    async def set_active_atomic(self, company_name: str, is_active: bool) -> None:
         async with self.session.begin():
             stmt = (
                 update(Company)
-                .where(Company.id == company_id)
+                .where(Company.name == company_name)
                 .values(is_active=is_active)
             )
             await self.session.execute(stmt)

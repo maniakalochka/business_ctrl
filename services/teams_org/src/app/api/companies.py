@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.services.companies import CompanyService
-from app.schemas.companies import CompanyCreate, CompanyRead
+from app.schemas.companies import CompanyCreate, CompanyRead, CompanyUpdate
 from app.schemas.principal import Principal
 from app.auth.deps import get_current_principal
 from app.services.deps import company_service_dep
@@ -40,3 +40,32 @@ async def read_company(
     elif principal.role not in {"admin", "manager"}:
         raise HTTPException(status_code=403, detail="Access denied")
     return CompanyRead.model_validate(company)
+
+
+@cmp_router.patch(
+    "/{company_id}/deactivate",
+    response_model=CompanyUpdate,
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def deactivate_company(
+    company_name: str,
+    principal: Principal = Depends(get_current_principal),
+    svc: CompanyService = Depends(company_service_dep),
+) -> None:
+    if "companies.write" not in principal.scope and (
+        principal.role not in {"admin", "manager"}
+    ):
+        raise HTTPException(status_code=403, detail="Insufficient scope")
+    await svc.deactivate(company_name=company_name)
+
+
+async def activate_company(
+    company_name: str,
+    principal: Principal = Depends(get_current_principal),
+    svc: CompanyService = Depends(company_service_dep),
+) -> None:
+    if "companies.write" not in principal.scope and (
+        principal.role not in {"admin", "manager"}
+    ):
+        raise HTTPException(status_code=403, detail="Insufficient scope")
+    await svc.activate(company_name=company_name)
