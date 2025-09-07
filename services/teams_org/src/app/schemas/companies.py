@@ -11,7 +11,11 @@ class CompanyBase(BaseModel):
 
 
 class CompanyCreate(CompanyBase):
+    id: UUID = Field(...)
     owner_user_id: Optional[UUID] = Field(None)
+    is_active: bool = Field(...)
+    created_at: datetime = Field(...)
+    updated_at: datetime = Field(...)
 
 
 class CompanyUpdate(BaseModel):

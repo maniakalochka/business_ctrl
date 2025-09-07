@@ -4,6 +4,8 @@ from uuid import UUID
 from app.exceptions.exceptions import NotFound
 from app.repositories.companies import CompanyRepository
 from app.repositories.teams import TeamRepository
+from app.models.companies import Company
+from app.models.teams import Team
 
 
 class CompanyService:
@@ -11,7 +13,10 @@ class CompanyService:
         self._companies = companies
         self._teams = teams
 
-    async def create(self, *, name: str, owner_id: UUID):
+    async def get(self, name: str) -> Company | None:
+        return await self._companies.get_by_name(name=name)
+
+    async def create(self, *, name: str, owner_id: UUID) -> Company:
         return await self._companies.create_atomic(name=name, owner_id=owner_id)
 
     async def activate(self, company_id: UUID) -> None:
@@ -38,7 +43,7 @@ class CompanyService:
         only_active: bool = True,
         limit: int = 100,
         offset: int = 0,
-    ):
+    ) -> Sequence[Team]:
         company = await self._companies.get(company_id)
         if not company:
             raise NotFound("Компания не найдена")
