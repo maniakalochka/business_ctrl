@@ -1,11 +1,9 @@
-from typing import Sequence
 from uuid import UUID
 
 from app.exceptions.exceptions import NotFound
 from app.repositories.companies import CompanyRepository
 from app.repositories.memberships import MembershipRepository
 from app.repositories.teams import TeamRepository
-from app.models.teams import Team
 
 
 class TeamService:
@@ -51,10 +49,10 @@ class TeamService:
         only_active: bool = True,
         limit: int = 100,
         offset: int = 0
-    ) -> Sequence[Team]:
+    ):
         company = await self._companies.get(company_id)
         if not company:
             raise NotFound("Компания не найдена")
         return await self._teams.list_by_company(
-            company_id=company_id, only_active=only_active, limit=limit, offset=offset
+            company_id, only_active=only_active, limit=limit, offset=offset
         )

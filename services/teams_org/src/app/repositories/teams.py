@@ -45,7 +45,9 @@ class TeamRepository(SQLAlchemyRepository):
     ) -> Team:
         try:
             async with self.session.begin():
-                team = Team(company_id=company_id, name=name, owner_user_id=owner_user_id)  # type: ignore[call-arg]
+                team = Team(
+                    company_id=company_id, name=name, owner_user_id=owner_user_id
+                )
                 self.session.add(team)
             return team
         except IntegrityError as e:

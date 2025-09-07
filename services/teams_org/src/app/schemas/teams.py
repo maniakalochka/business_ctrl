@@ -13,6 +13,7 @@ class TeamCreate(TeamBase):
     companies_id: UUID = Field(
         ..., description="ID компании, к которой относится команда"
     )
+    name: str = Field(..., max_length=150, description="Название команды")
     owner_user_id: Optional[UUID] = Field(
         None, description="ID пользователя-владельца команды"
     )
