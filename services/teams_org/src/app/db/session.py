@@ -6,7 +6,9 @@ from sqlalchemy.pool import NullPool
 
 from app.core.config import settings
 
-DATABASE_URL = settings.TEST_COMPANY_DB_URL if settings.MODE == "TEST" else settings.COMPANY_DB_URL
+DATABASE_URL = (
+    settings.TEST_COMPANY_DB_URL if settings.MODE == "TEST" else settings.COMPANY_DB_URL
+)
 DATABASE_PARAMS = {"poolclass": NullPool}
 
 engine = create_async_engine(url=DATABASE_URL, echo=False, **DATABASE_PARAMS)
