@@ -5,7 +5,7 @@ from app.exceptions.exceptions import NotFound
 from app.repositories.companies import CompanyRepository
 from app.repositories.memberships import MembershipRepository
 from app.repositories.teams import TeamRepository
-from services.teams_org.src.app.models.teams import Team
+from app.models.teams import Team
 
 
 class TeamService:
