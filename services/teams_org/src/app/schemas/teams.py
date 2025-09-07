@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field, ConfigDict
-from uuid import UUID
 from typing import List, Optional
+from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class TeamBase(BaseModel):
@@ -9,13 +10,19 @@ class TeamBase(BaseModel):
 
 
 class TeamCreate(TeamBase):
-    companies_id: UUID = Field(..., description="ID компании, к которой относится команда")
-    owner_user_id: Optional[UUID] = Field(None, description="ID пользователя-владельца команды")
+    companies_id: UUID = Field(
+        ..., description="ID компании, к которой относится команда"
+    )
+    owner_user_id: Optional[UUID] = Field(
+        None, description="ID пользователя-владельца команды"
+    )
 
 
 class TeamRead(TeamBase):
     id: UUID = Field(..., description="Уникальный идентификатор команды")
-    companies_id: UUID = Field(..., description="ID компании, к которой относится команда")
+    companies_id: UUID = Field(
+        ..., description="ID компании, к которой относится команда"
+    )
     memberships: Optional[List] = Field(None, description="Список участников команды")
 
     model_config = ConfigDict(from_attributes=True)

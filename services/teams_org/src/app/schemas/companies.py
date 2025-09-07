@@ -1,19 +1,23 @@
-from pydantic import BaseModel, Field
-from uuid import UUID
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+from uuid import UUID
+
+from pydantic import BaseModel, Field
+from pydantic import ConfigDict
+
 
 class CompanyBase(BaseModel):
     name: str = Field(..., max_length=150)
-    slug: str = Field(..., max_length=150)
+
 
 class CompanyCreate(CompanyBase):
     owner_user_id: Optional[UUID] = Field(None)
 
+
 class CompanyUpdate(BaseModel):
     name: Optional[str] = Field(None, max_length=150)
-    slug: Optional[str] = Field(None, max_length=150)
     is_active: Optional[bool] = Field(None)
+
 
 class CompanyRead(CompanyBase):
     id: UUID = Field(...)
@@ -21,3 +25,5 @@ class CompanyRead(CompanyBase):
     is_active: bool = Field(...)
     created_at: datetime = Field(...)
     updated_at: datetime = Field(...)
+
+    model_config = ConfigDict(from_attributes=True)
