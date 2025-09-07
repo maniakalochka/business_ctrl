@@ -8,9 +8,17 @@ class Settings(BaseSettings):
     COMPANY_DB_URL: str
     TEST_COMPANY_DB_URL: str
 
-    MODE: Literal["DEV", "TEST"] = "TEST"
+    MODE: Literal["DEV", "TEST"]
 
-    SECRET: str
+    # Security
+    JWT_SECRET: str
+    ALGO: str
+    JWT_ISSUER: str
+    JWT_AUDIENCE: str
+    CLOCK_SKEW_S: int
+
+    # Cache
+    REDIS_URL: str
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
