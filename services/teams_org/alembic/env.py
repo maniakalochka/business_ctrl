@@ -5,19 +5,23 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import pool
 
+
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 SRC_DIR = os.path.join(BASE_DIR, "src")
 if SRC_DIR not in sys.path:
     sys.path.insert(0, SRC_DIR)
 
+
 from app.core.config import settings  # type: ignore
 from app.db.base import Base  # type: ignore
-from app.models.teams import Team  # type: ignore
 from app.models.companies import Company  # type: ignore
+from app.models.teams import Team  # type: ignore
 from app.models.memberships import Membership  # type: ignore
 
 config = context.config
-DB_URL = getattr(settings, "COMPANY_DB_URL", None) or getattr(settings, "TEST_COMPANY_DB_URL", None)
+DB_URL = getattr(settings, "COMPANY_DB_URL", None) or getattr(
+    settings, "TEST_COMPANY_DB_URL", None
+)
 if DB_URL:
     config.set_main_option("sqlalchemy.url", DB_URL)
 
@@ -28,6 +32,7 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 if not target_metadata.tables:
     raise RuntimeError("target_metadata.tables is empty")
+
 
 def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")
@@ -42,6 +47,7 @@ def run_migrations_offline() -> None:
     with context.begin_transaction():
         context.run_migrations()
 
+
 def do_run_migrations(connection):
     context.configure(
         connection=connection,
@@ -52,14 +58,17 @@ def do_run_migrations(connection):
     with context.begin_transaction():
         context.run_migrations()
 
+
 async def run_migrations_online() -> None:
     url = config.get_main_option("sqlalchemy.url") or DB_URL
     if url and url.startswith("postgresql+asyncpg"):
         url = url.replace("postgresql+asyncpg", "postgresql+psycopg2")
     from sqlalchemy import create_engine
+
     connectable = create_engine(url, poolclass=pool.NullPool)  # type: ignore
     with connectable.connect() as connection:
         do_run_migrations(connection)
+
 
 if context.is_offline_mode():
     run_migrations_offline()
