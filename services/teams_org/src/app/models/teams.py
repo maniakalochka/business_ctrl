@@ -14,8 +14,8 @@ if TYPE_CHECKING:
 class Team(Base):
     __tablename__ = "teams"
 
-    name: Mapped[str] = mapped_column(String(150))
-    slug: Mapped[str] = mapped_column(String(150))
+    name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
+    slug: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
     owner_user_id: Mapped[uuid.UUID | None] = mapped_column(nullable=True)
     companies_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("companies.id", ondelete="CASCADE"), nullable=False
