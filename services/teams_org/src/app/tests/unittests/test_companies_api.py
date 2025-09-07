@@ -12,7 +12,7 @@ def mock_company_service():
     svc = MagicMock()
     svc.create = AsyncMock(
         return_value={
-            "id": str(uuid.uuid4()),  # UUID в виде строки
+            "id": str(uuid.uuid4()),
             "name": "TestCo",
             "owner_id": "user1",
             "is_active": True,
