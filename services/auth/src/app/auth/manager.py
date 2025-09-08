@@ -12,6 +12,7 @@ from app.models.users import User
 
 log = logging.getLogger(__name__)
 
+
 class UserManager(BaseUserManager[User, uuid.UUID]):
     reset_password_token_secret = settings.RESET_PASSWORD_TOKEN_SECRET
     verification_token_secret = settings.VERIFICATION_TOKEN_SECRET
@@ -22,12 +23,16 @@ class UserManager(BaseUserManager[User, uuid.UUID]):
     async def on_after_forgot_password(
         self, user: User, token: str, request: Optional[Request] = None
     ):
-        log.warning("User %r has forgot their password. Reset token: %r", user.id, token)
+        log.warning(
+            "User %r has forgot their password. Reset token: %r", user.id, token
+        )
 
     async def on_after_request_verify(
         self, user: User, token: str, request: Optional[Request] = None
     ):
-        log.warning("Verification requested for user %r. Verification token: %r", user.id, token)
+        log.warning(
+            "Verification requested for user %r. Verification token: %r", user.id, token
+        )
 
     def parse_id(
         self,
@@ -40,9 +45,6 @@ async def get_user_manager(user_db=Depends(get_user_db)):
     yield UserManager(user_db)
 
 
-fastapi_users = FastAPIUsers[User, uuid.UUID](
-    get_user_manager,
-    [auth_backend],
-)
+fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend])
 
 current_active_user = fastapi_users.current_user(active=True)

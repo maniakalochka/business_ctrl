@@ -44,7 +44,7 @@ class IssuerJWTStrategy(JWTStrategy[models.UP, models.ID]):
             token,
             self.secret,  # type: ignore
             algorithms=["HS256"],
-            audience=token_audience or self.token_audience,
+            audience=self.token_audience,
             issuer=settings.JWT_ISSUER,
             options={"require": ["exp", "iat"]},
         )

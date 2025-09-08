@@ -19,12 +19,15 @@ class UserRole(str, enum.Enum):
 
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
+    __tablename__ = "user"
 
     first_name: Mapped[Optional[str]] = mapped_column(String(100))
     last_name: Mapped[Optional[str]] = mapped_column(String(100))
     phone: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
 
-    role: Mapped[UserRole] = mapped_column(SQLEnum(UserRole), default=UserRole.EMPLOYEE)
+    role: Mapped[UserRole] = mapped_column(
+        SQLEnum(UserRole, name="userrole", create_type=False), default=UserRole.EMPLOYEE
+    )
 
     supervisor_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         ForeignKey("user.id", ondelete="SET NULL"), nullable=True

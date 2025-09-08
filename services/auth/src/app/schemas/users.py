@@ -12,15 +12,15 @@ class UserRead(fu_schemas.BaseUser[uuid.UUID]):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     phone: Optional[str] = None
+    is_active: bool = True
     role: UserRole = UserRole.EMPLOYEE
     supervisor_id: Optional[uuid.UUID] = None
 
-
     model_config = ConfigDict(
-        from_attributes=True,
         populate_by_name=True,
         alias_generator=to_camel,
     )
+
 
 class UserCreate(fu_schemas.BaseUserCreate):
     first_name: Optional[str] = None
@@ -30,9 +30,11 @@ class UserCreate(fu_schemas.BaseUserCreate):
     supervisor_id: Optional[uuid.UUID] = None
 
     model_config = ConfigDict(
+        from_attributes=True,
         populate_by_name=True,
         alias_generator=to_camel,
     )
+
 
 class UserUpdate(fu_schemas.BaseUserUpdate):
     first_name: Optional[str] = None
