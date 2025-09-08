@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.schemas.teams import TeamCreate, TeamRead
 from app.services.deps import team_service_dep
 from app.services.teams import TeamService
-from services.teams_org.src.app.models.teams import Team
+from app.models.teams import Team
 
 teams_router = APIRouter(prefix="/teams", tags=["teams"])
 
