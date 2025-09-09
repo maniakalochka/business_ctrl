@@ -17,6 +17,7 @@ class UserRead(fu_schemas.BaseUser[uuid.UUID]):
     supervisor_id: Optional[uuid.UUID] = None
 
     model_config = ConfigDict(
+        from_attributes=True,
         populate_by_name=True,
         alias_generator=to_camel,
     )
