@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.services.companies import CompanyService
-from app.schemas.companies import CompanyRead, CompanyUpdate
+from app.schemas.companies import CompanyRead
 from app.schemas.principal import Principal
 from app.auth.deps import get_current_principal
 from app.services.deps import company_service_dep
@@ -44,8 +44,8 @@ async def read_company(
 
 @cmp_router.patch(
     "/{company_id}/deactivate",
-    response_model=CompanyUpdate,
-    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=CompanyRead,
+    status_code=status.HTTP_200_OK,
 )
 async def deactivate_company(
     company_name: str,
@@ -59,6 +59,11 @@ async def deactivate_company(
     await svc.deactivate(company_name=company_name)
 
 
+@cmp_router.patch(
+    "/{company_id}/activate",
+    response_model=CompanyRead,
+    status_code=status.HTTP_200_OK,
+)
 async def activate_company(
     company_name: str,
     principal: Principal = Depends(get_current_principal),
