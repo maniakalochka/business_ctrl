@@ -7,12 +7,17 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.companies import Company
-from src.app.repositories.base_sqlalchemy import SQLAlchemyRepository
+from app.repositories.base_sqlalchemy import SQLAlchemyRepository
 
 
 class CompanyRepository(SQLAlchemyRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
+
+    async def get(self, company_id: UUID) -> Company | None:
+        stmt = select(Company).where(Company.id == company_id)
+        res = await self.session.execute(stmt)
+        return res.scalar_one_or_none()
 
     async def get_by_name(self, name: str) -> Company | None:
         stmt = select(Company).where(Company.name == name)

@@ -14,6 +14,11 @@ class TeamRepository(SQLAlchemyRepository):
     def __init__(self, session: AsyncSession):
         super().__init__(session, Team)
 
+    async def get(self, team_id: UUID) -> Team | None:
+        stmt = select(Team).where(Team.id == team_id)
+        res = await self.session.execute(stmt)
+        return res.scalar_one_or_none()
+
     async def get_by_name_in_company(
         self, *, name: str, company_id: UUID
     ) -> Team | None:
@@ -43,12 +48,10 @@ class TeamRepository(SQLAlchemyRepository):
     async def create_team_atomic(
         self, *, company_id: UUID, name: str, owner_user_id: UUID | None
     ) -> Team:
+        team = Team(company_id=company_id, name=name, owner_user_id=owner_user_id)
         try:
-            async with self.session.begin():
-                team = Team(
-                    company_id=company_id, name=name, owner_user_id=owner_user_id
-                )
-                self.session.add(team)
+            self.session.add(team)
+            await self.session.flush()
             return team
         except IntegrityError as e:
             raise AlreadyExists from e

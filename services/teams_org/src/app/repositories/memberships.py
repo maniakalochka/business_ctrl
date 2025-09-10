@@ -15,6 +15,13 @@ class MembershipRepository(SQLAlchemyRepository):
     def __init__(self, session: AsyncSession):
         super().__init__(session, Membership)
 
+    async def get(self, team_id: UUID, user_id: UUID) -> Membership | None:
+        stmt = select(Membership).where(
+            Membership.team_id == team_id, Membership.user_id == user_id
+        )
+        res = await self.session.execute(stmt)
+        return res.scalar_one_or_none()
+
     async def get_by_user_id(self, user_id: UUID):
         stmt = select(Membership).where(Membership.user_id == user_id)
         res = await self.session.execute(stmt)
