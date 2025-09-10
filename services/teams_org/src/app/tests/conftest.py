@@ -1,30 +1,82 @@
+import pytest
+import datetime
+from unittest.mock import AsyncMock
+import uuid
 import httpx
 import pytest_asyncio
 from asgi_lifespan import LifespanManager
-from sqlalchemy.ext.asyncio import create_async_engine
 
-from app.core.config import settings
 from app.db import SessionLocal
-from app.db.base import Base
 from app.main import app
 
 
-@pytest_asyncio.fixture(scope="session", autouse=True)
-async def engine():
-    engine = create_async_engine(
-        settings.TEST_COMPANY_DB_URL, echo=False, pool_pre_ping=True
+class FakePrincipal:
+    def __init__(
+        self,
+        sub,
+        role,
+        scope,
+    ):
+        self.sub = sub
+        self.role = role
+        self.scope = scope
+
+
+@pytest.fixture
+def principal_admin() -> FakePrincipal:
+    return FakePrincipal(
+        sub="user1",
+        role="admin",
+        scope="companies.write",
     )
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
-    yield engine
-    await engine.dispose()
 
 
-@pytest_asyncio.fixture(scope="session")
+@pytest.fixture
+def principal_manager() -> FakePrincipal:
+    return FakePrincipal(
+        sub="user1",
+        role="manager",
+        scope="teams.write",
+    )
+
+
+@pytest.fixture
+def principal_employee() -> FakePrincipal:
+    return FakePrincipal(sub="user2", role="employee", scope=[])
+
+
+@pytest_asyncio.fixture
+async def mock_team_service() -> AsyncMock:
+    svc = AsyncMock()
+    svc.create.return_value = {
+        "id": str(uuid.uuid4()),
+        "name": "Dev Team",
+        "company_id": str(uuid.uuid4()),
+        "is_active": True,
+        "created_at": datetime.datetime.now().isoformat(),
+        "updated_at": datetime.datetime.now().isoformat(),
+    }
+    return svc
+
+
+@pytest_asyncio.fixture(scope="module")
 async def test_app():
     async with LifespanManager(app):
         yield app
+
+
+@pytest_asyncio.fixture
+async def mock_company_service() -> AsyncMock:
+    svc = AsyncMock()
+    svc.create.return_value = {
+        "id": str(uuid.uuid4()),
+        "name": "TestCo",
+        "owner_id": "user1",
+        "is_active": True,
+        "created_at": datetime.datetime.now().isoformat(),
+        "updated_at": datetime.datetime.now().isoformat(),
+    }
+    return svc
 
 
 @pytest_asyncio.fixture(scope="function", autouse=True)
