@@ -29,16 +29,10 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
         SQLEnum(UserRole, name="userrole", create_type=False), default=UserRole.EMPLOYEE
     )
 
-    supervisor_id: Mapped[Optional[uuid.UUID]] = mapped_column(
-        ForeignKey("user.id", ondelete="SET NULL"), nullable=True
-    )
-
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.now, onupdate=datetime.now
     )
-
-    supervisor = relationship("User", remote_side="User.id", backref="subordinates")
 
     def __repr__(self) -> str:
         return f"<User {self.email}>, Role: {self.role} "
