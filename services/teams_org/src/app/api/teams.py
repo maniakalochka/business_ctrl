@@ -6,6 +6,7 @@ from app.services.deps import team_service_dep
 from app.services.teams import TeamService
 from app.models.teams import Team
 from app.auth.deps import get_current_principal
+from services.teams_org.src.app.models.companies import Company
 
 teams_router = APIRouter(tags=["teams"])
 
@@ -13,7 +14,7 @@ teams_router = APIRouter(tags=["teams"])
 @teams_router.get("/teams/{teams_id}", response_model=TeamRead)
 async def get_team(
     team: TeamRead = Depends(), svc: TeamService = Depends(team_service_dep)
-):
+) -> Company:
     team_data = await svc.get(team.id)
     if not team_data:
         raise HTTPException(status_code=404, detail="Team not found")
@@ -48,7 +49,7 @@ async def rename_team(
         raise HTTPException(status_code=404, detail="Team not found")
     if principal.role not in ("admin", "manager"):
         raise HTTPException(status_code=403, detail="Not authorized to rename team")
-    updated_team = await svc.rename(team_id=team_id, new_name=new_name)
+    updated_team = await svc.rename(team_id=team_id, new_name=new_name)  # type: ignore
     if not updated_team:
         raise HTTPException(status_code=404, detail="Team not found")
     return updated_team
