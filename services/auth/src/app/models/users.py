@@ -39,3 +39,6 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     )
 
     supervisor = relationship("User", remote_side="User.id", backref="subordinates")
+
+    def __repr__(self) -> str:
+        return f"<User {self.email}>, Role: {self.role} "
