@@ -6,7 +6,7 @@ from app.services.deps import team_service_dep
 from app.services.teams import TeamService
 from app.models.teams import Team
 from app.auth.deps import get_current_principal
-from services.teams_org.src.app.models.companies import Company
+from app.models.companies import Company
 
 teams_router = APIRouter(tags=["teams"])
 
