@@ -1,10 +1,11 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.schemas.teams import TeamCreate, TeamRead
+from app.schemas.teams import TeamCreate, TeamRead, TeamUpdate
 from app.services.deps import team_service_dep
 from app.services.teams import TeamService
 from app.models.teams import Team
+from app.auth.deps import get_current_principal
 
 teams_router = APIRouter(tags=["teams"])
 
@@ -21,8 +22,12 @@ async def get_team(
 
 @teams_router.post("/teams/", response_model=TeamRead, status_code=201)
 async def create_team(
-    team: TeamCreate, svc: TeamService = Depends(team_service_dep)
+    team: TeamCreate,
+    svc: TeamService = Depends(team_service_dep),
+    principal=Depends(get_current_principal),
 ) -> Team:
+    if principal.role not in ("admin", "manager"):
+        raise HTTPException(status_code=403, detail="Not authorized to create team")
     teams = await svc.create(
         company_id=team.companies_id, name=team.name, owner_user_id=team.owner_user_id
     )
@@ -33,7 +38,17 @@ async def create_team(
     "/teams/{team_id}/rename", response_model=TeamRead, status_code=status.HTTP_200_OK
 )
 async def rename_team(
-    team_id: UUID, new_name: str, svc: TeamService = Depends(team_service_dep)
-) -> None:
-    teams = await svc.rename(team_id=team_id, new_name=new_name)
-    return teams
+    team_id: UUID,
+    new_name: TeamUpdate,
+    svc: TeamService = Depends(team_service_dep),
+    principal=Depends(get_current_principal),
+):
+    team = await svc.get(team_id)
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    if principal.role not in ("admin", "manager"):
+        raise HTTPException(status_code=403, detail="Not authorized to rename team")
+    updated_team = await svc.rename(team_id=team_id, new_name=new_name)
+    if not updated_team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    return updated_team

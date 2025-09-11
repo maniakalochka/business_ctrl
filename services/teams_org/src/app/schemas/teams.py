@@ -25,3 +25,7 @@ class TeamRead(TeamBase):
     memberships: Optional[List] = Field(None, description="Список участников команды")
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class TeamUpdate(BaseModel):
+    name: str = Field(..., max_length=150, description="Новое название команды")
