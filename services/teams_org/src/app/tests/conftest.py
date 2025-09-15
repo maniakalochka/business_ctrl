@@ -79,6 +79,21 @@ async def mock_company_service() -> AsyncMock:
     return svc
 
 
+@pytest_asyncio.fixture
+async def mock_membership_service() -> AsyncMock:
+    svc = AsyncMock()
+    svc.add_user_to_team.return_value = {
+        "id": str(uuid.uuid4()),
+        "user_id": str(uuid.uuid4()),
+        "team_id": str(uuid.uuid4()),
+        "role": "member",
+        "is_active": True,
+        "created_at": datetime.datetime.now().isoformat(),
+        "updated_at": datetime.datetime.now().isoformat(),
+    }
+    return svc
+
+
 @pytest_asyncio.fixture(scope="function", autouse=True)
 async def async_client(test_app):
     transport = httpx.ASGITransport(app=test_app)
