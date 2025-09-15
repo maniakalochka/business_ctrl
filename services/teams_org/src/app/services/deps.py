@@ -1,11 +1,17 @@
 from fastapi import Depends
 
 from app.repositories.companies import CompanyRepository
-from app.repositories.deps import (company_repo_dep, membership_repo_dep,
-                                   team_repo_dep)
+from app.repositories.deps import (
+    company_repo_dep,
+    membership_repo_dep,
+    team_repo_dep,
+    invite_repo_dep,
+)
+from app.repositories.invites import InviteRepository
 from app.repositories.memberships import MembershipRepository
 from app.repositories.teams import TeamRepository
 from app.services.companies import CompanyService
+from app.services.invites import InvitesService
 from app.services.memberships import MembershipService
 from app.services.teams import TeamService
 
@@ -30,3 +36,10 @@ async def membership_service_dep(
     memberships: MembershipRepository = Depends(membership_repo_dep),
 ) -> MembershipService:
     return MembershipService(teams=teams, memberships=memberships)
+
+
+async def token_service_dep(
+    teams: TeamRepository = Depends(team_repo_dep),
+    invites: InviteRepository = Depends(invite_repo_dep),
+) -> InvitesService:
+    return InvitesService(teams=teams, invites=invites)

@@ -1,6 +1,5 @@
 import jwt
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi import HTTPException, status
 
 from app.core.config import settings
 from app.schemas.user_claims import UserClaims

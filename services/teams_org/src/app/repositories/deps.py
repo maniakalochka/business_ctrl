@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_async_session
 from app.repositories.companies import CompanyRepository
+from app.repositories.invites import InviteRepository
 from app.repositories.memberships import MembershipRepository
 from app.repositories.teams import TeamRepository
 
@@ -23,3 +24,9 @@ async def membership_repo_dep(
     session: AsyncSession = Depends(get_async_session),
 ) -> MembershipRepository:
     return MembershipRepository(session)
+
+
+async def invite_repo_dep(
+    session: AsyncSession = Depends(get_async_session),
+) -> InviteRepository:
+    return InviteRepository(session)
