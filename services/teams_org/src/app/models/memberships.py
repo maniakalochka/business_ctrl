@@ -10,8 +10,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 if TYPE_CHECKING:
-    from app.models.companies import Company  # noqa: F401
-    from app.models.teams import Team  # noqa: F401
+    from app.models.companies import Company
+    from app.models.teams import Team
 
 
 class MembershipStatus(str, enum.Enum):
