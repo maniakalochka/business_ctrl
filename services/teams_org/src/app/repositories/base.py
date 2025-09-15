@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Sequence
+import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,7 +11,7 @@ class AbstractRepository(ABC):
         self.model = model
 
     @abstractmethod
-    async def get(self, id_: Any):
+    async def get(self, id_: uuid.UUID) -> Any | None:
         raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod

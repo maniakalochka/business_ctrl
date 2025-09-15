@@ -7,8 +7,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 if TYPE_CHECKING:
-    from app.models.memberships import Membership  # noqa: F401
-    from app.models.teams import Team  # noqa: F401
+    from app.models.memberships import Membership
+    from app.models.teams import Team
 
 
 class Company(Base):

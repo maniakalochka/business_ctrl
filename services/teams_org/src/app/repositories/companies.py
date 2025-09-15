@@ -1,18 +1,18 @@
 from typing import Sequence
 from uuid import UUID
 
-from app.exceptions.exceptions import AlreadyExists
 from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.exceptions.exceptions import AlreadyExists
 from app.models.companies import Company
 from app.repositories.base_sqlalchemy import SQLAlchemyRepository
 
 
 class CompanyRepository(SQLAlchemyRepository):
     def __init__(self, session: AsyncSession):
-        self.session = session
+        super().__init__(session, Company)
 
     async def get(self, company_id: UUID) -> Company | None:
         stmt = select(Company).where(Company.id == company_id)

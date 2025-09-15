@@ -1,3 +1,4 @@
+import uuid
 from typing import Any, Sequence
 
 from sqlalchemy import select
@@ -9,6 +10,14 @@ from app.repositories.base import AbstractRepository
 class SQLAlchemyRepository(AbstractRepository):
     def __init__(self, session: AsyncSession, model: Any):
         super().__init__(session, model)
+
+    async def get(
+        self,
+        id_: uuid.UUID,
+    ) -> Any | None:
+        stmt = select(self.model).where(self.model.id == id_)
+        res = await self.session.execute(stmt)
+        return res.scalar_one_or_none()
 
     async def list(self, *, limit: int = 100, offset: int = 0) -> Sequence[Any]:
         stmt = select(self.model).limit(limit).offset(offset)
