@@ -8,6 +8,7 @@ from app.db.base import Base
 
 if TYPE_CHECKING:
     from app.models.companies import Company
+    from app.models.invites import Invite
     from app.models.memberships import Membership
 
 
@@ -28,4 +29,8 @@ class Team(Base):
         "Company",
         back_populates="teams",
         lazy="selectin",
+    )
+
+    invites: Mapped[list["Invite"]] = relationship(
+        "Invite", back_populates="teams", cascade="all, delete-orphan"
     )
