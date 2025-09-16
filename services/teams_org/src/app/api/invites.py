@@ -8,7 +8,7 @@ from app.schemas.principal import Principal
 from app.services.deps import token_service_dep
 from app.services.invites import InvitesService
 
-inv_router = APIRouter(prefix="/invites", tags=["invites"])
+inv_router = APIRouter(tags=["invites"])
 
 
 @inv_router.post(
@@ -35,8 +35,12 @@ async def create_invite(
     return InviteRead.model_validate(invite)
 
 
-@inv_router.post("/accept", response_model=InviteRead)
+@inv_router.post(
+    "/teams/{team_id}/invites/{invite_id}/accept", response_model=InviteRead
+)
 async def accept_invite(
+        team_id: uuid.UUID,  # параметр оставлен для совместимости с маршрутом, но не используется
+        invite_id: uuid.UUID,  # параметр оставлен для совместимости с маршрутом, но не используется
         data: InviteAcceptRequest,
         principal: Principal = Depends(get_current_principal),
         svc: InvitesService = Depends(token_service_dep),

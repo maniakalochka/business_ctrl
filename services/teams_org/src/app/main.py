@@ -9,7 +9,7 @@ app = FastAPI()
 
 app.include_router(cmp_router, prefix="/companies")
 app.include_router(teams_router)
-app.include_router(inv_router, prefix="/teams/{teams_id}")
+app.include_router(inv_router)
 
 if __name__ == "__main__":
     uvicorn.run("app:app", host="localhost", port=8081, reload=True)

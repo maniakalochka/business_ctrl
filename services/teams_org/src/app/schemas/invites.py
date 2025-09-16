@@ -1,18 +1,20 @@
+import uuid
 from datetime import datetime
-from uuid import UUID
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 class InviteCreateRequest(BaseModel):
-    email: EmailStr
+    team_id: uuid.UUID
+    email: str
+    inviter_id: uuid.UUID
 
 
 class InviteRead(BaseModel):
-    id: UUID
-    email: EmailStr
-    team_id: UUID
-    inviter_id: UUID
+    id: uuid.UUID
+    email: str
+    team_id: uuid.UUID
+    inviter_id: uuid.UUID
     token: str
     accepted: bool
     accepted_at: datetime | None
