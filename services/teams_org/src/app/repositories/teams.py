@@ -4,6 +4,7 @@ from uuid import UUID
 from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.exceptions.exceptions import AlreadyExists
 from app.models.teams import Team
@@ -15,30 +16,51 @@ class TeamRepository(SQLAlchemyRepository):
         super().__init__(session, Team)
 
     async def get(self, team_id: UUID) -> Team | None:
-        stmt = select(Team).where(Team.id == team_id)
+        stmt = (
+            select(Team)
+            .options(
+                selectinload(Team.memberships),
+                selectinload(Team.invites),
+                selectinload(Team.companies),
+            )
+            .where(Team.id == team_id)
+        )
         res = await self.session.execute(stmt)
         return res.scalar_one_or_none()
 
     async def get_by_name_in_company(
-        self, *, name: str, company_id: UUID
+            self, *, name: str, company_id: UUID
     ) -> Team | None:
         stmt = (
             select(Team)
-            .where(Team.companies_id == company_id)
+            .options(
+                selectinload(Team.memberships),
+                selectinload(Team.invites),
+                selectinload(Team.companies),
+            )
+            .where(Team.company_id == company_id)
             .where(func.lower(Team.name) == func.lower(name))
         )
         res = await self.session.execute(stmt)
         return res.scalar_one_or_none()
 
     async def list_by_company(
-        self,
-        company_id: UUID,
-        *,
-        only_active: bool = True,
-        limit: int = 100,
-        offset: int = 0
+            self,
+            company_id: UUID,
+            *,
+            only_active: bool = True,
+            limit: int = 100,
+            offset: int = 0
     ) -> Sequence[Team]:
-        stmt = select(Team).where(Team.companies_id == company_id)
+        stmt = (
+            select(Team)
+            .options(
+                selectinload(Team.memberships),
+                selectinload(Team.invites),
+                selectinload(Team.companies),
+            )
+            .where(Team.company_id == company_id)
+        )
         if only_active:
             stmt = stmt.where(Team.is_active.is_(True))
         stmt = stmt.limit(limit).offset(offset)
@@ -46,13 +68,14 @@ class TeamRepository(SQLAlchemyRepository):
         return res.scalars().all()
 
     async def create_team_atomic(
-        self, *, company_id: UUID, name: str, owner_user_id: UUID | None
+            self, *, company_id: UUID, name: str, owner_user_id: UUID | None
     ) -> Team:
         team = Team(company_id=company_id, name=name, owner_user_id=owner_user_id)
         try:
             self.session.add(team)
             await self.session.flush()
-            return team
+            await self.session.commit()
+            return await self.get(team.id)
         except IntegrityError as e:
             raise AlreadyExists from e
 

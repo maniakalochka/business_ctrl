@@ -16,7 +16,7 @@ class TeamCreate(TeamBase):
 
 class TeamRead(TeamBase):
     id: UUID = Field(..., description="Уникальный идентификатор команды")
-    companies_id: UUID = Field(
+    company_id: UUID = Field(
         ..., description="ID компании, к которой относится команда"
     )
     memberships: Optional[List] = Field(None, description="Список участников команды")
