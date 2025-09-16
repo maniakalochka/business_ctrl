@@ -12,7 +12,7 @@ from app.services.teams import TeamService
 teams_router = APIRouter(tags=["teams"])
 
 
-@teams_router.get("/companies/{company_id}/teams/{teams_id}", response_model=TeamRead)
+@teams_router.get("/{teams_id}", response_model=TeamRead)
 async def get_team(
         team: TeamRead = Depends(), svc: TeamService = Depends(team_service_dep)
 ) -> Company:
@@ -22,9 +22,7 @@ async def get_team(
     return team_data
 
 
-@teams_router.post(
-    "/companies/{company_id}/teams/", response_model=TeamRead, status_code=201
-)
+@teams_router.post("/", response_model=TeamRead, status_code=201)
 async def create_team(
         company_id: UUID,
         team: TeamCreate,
@@ -47,7 +45,7 @@ async def create_team(
 
 
 @teams_router.patch(
-    "/teams/{team_id}/rename", response_model=TeamRead, status_code=status.HTTP_200_OK
+    "{team_id}/rename", response_model=TeamRead, status_code=status.HTTP_200_OK
 )
 async def rename_team(
         team_id: UUID,
