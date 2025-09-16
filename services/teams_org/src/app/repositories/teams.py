@@ -29,7 +29,7 @@ class TeamRepository(SQLAlchemyRepository):
         return res.scalar_one_or_none()
 
     async def get_by_name_in_company(
-        self, *, name: str, company_id: UUID
+            self, *, name: str, company_id: UUID
     ) -> Team | None:
         stmt = (
             select(Team)
@@ -45,12 +45,12 @@ class TeamRepository(SQLAlchemyRepository):
         return res.scalar_one_or_none()
 
     async def list_by_company(
-        self,
-        company_id: UUID,
-        *,
-        only_active: bool = True,
-        limit: int = 100,
-        offset: int = 0
+            self,
+            company_id: UUID,
+            *,
+            only_active: bool = True,
+            limit: int = 100,
+            offset: int = 0,
     ) -> Sequence[Team]:
         stmt = (
             select(Team)
@@ -68,16 +68,16 @@ class TeamRepository(SQLAlchemyRepository):
         return res.scalars().all()
 
     async def create_team_atomic(
-        self, *, company_id: UUID, name: str, owner_user_id: UUID | None
+            self, *, company_id: UUID, name: str, owner_user_id: UUID | None
     ) -> Team:
+        exists = await self.get_by_name_in_company(name=name, company_id=company_id)
+        if exists:
+            raise AlreadyExists(f"Team with name '{name}' already exists in company.")
         team = Team(company_id=company_id, name=name, owner_user_id=owner_user_id)
-        try:
-            self.session.add(team)
-            await self.session.flush()
-            await self.session.commit()
-            return await self.get(team.id)
-        except IntegrityError as e:
-            raise AlreadyExists from e
+        self.session.add(team)
+        await self.session.flush()
+        await self.session.commit()
+        return await self.get(team.id)
 
     async def rename_atomic(self, *, team_id: UUID, new_name: str) -> None:
         try:
