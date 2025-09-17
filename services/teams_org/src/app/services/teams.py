@@ -24,13 +24,13 @@ class TeamService:
         return await self._teams.get_by_name_in_company(name=name)
 
     async def create(
-            self, *, company_id: UUID, name: str, owner_user_id: UUID | None = None
+            self, *, company_name: str, name: str, owner_user_id: UUID | None = None
     ):
-        company = await self._companies.get(company_id)
-        if not company:
+        company_id = await self._companies.get_by_name(name=company_name)
+        if not company_id.id:
             raise NotFound("Компания не найдена")
         return await self._teams.create_team_atomic(
-            company_id=company_id, name=name, owner_user_id=owner_user_id
+            company_id=company_id.id, name=name, owner_user_id=owner_user_id
         )
 
     async def rename(self, *, team_id: UUID, new_name: str):
@@ -54,8 +54,11 @@ class TeamService:
             offset: int = 0
     ):
         company = await self._companies.get_by_name(name=company_name)
-        if not company:
+        if not company or not company.id:
             raise NotFound("Компания не найдена")
         return await self._teams.list_by_company(
-            company_name, only_active=only_active, limit=limit, offset=offset
+            company_id=company.id,
+            only_active=only_active,
+            limit=limit,
+            offset=offset,
         )

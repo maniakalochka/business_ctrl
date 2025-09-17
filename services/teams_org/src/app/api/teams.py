@@ -25,6 +25,7 @@ async def get_team(
     return team
 
 
+# FIX: always return empty list
 @teams_router.get("/", response_model=list[TeamRead])
 async def list_teams(
         company_name: str,
@@ -33,13 +34,13 @@ async def list_teams(
 ) -> list[Team]:
     if not principal.role in {"admin", "manager"}:
         raise HTTPException(status_code=403, detail="Not authorized to list teams")
-    teams = await svc.list_by_company()
+    teams = await svc.list_by_company(company_name)
     return teams
 
 
 @teams_router.post("/", response_model=TeamRead, status_code=201)
 async def create_team(
-        company_id: UUID,
+        company_name: str,
         team: TeamCreate,
         svc: TeamService = Depends(team_service_dep),
         principal=Depends(get_current_principal),
@@ -50,8 +51,8 @@ async def create_team(
 
     try:
         new_team = await svc.create(
+            company_name=company_name,
             name=team.name,
-            company_id=company_id,
             owner_user_id=team.owner_user_id,
         )
     except AlreadyExists as e:

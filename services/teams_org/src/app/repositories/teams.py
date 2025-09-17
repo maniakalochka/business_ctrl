@@ -1,7 +1,8 @@
+import uuid
 from typing import Sequence
 from uuid import UUID
 
-from sqlalchemy import func, select, update
+from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -36,14 +37,14 @@ class TeamRepository(SQLAlchemyRepository):
                 selectinload(Team.invites),
                 selectinload(Team.companies),
             )
-            .where(func.lower(Team.name) == func.lower(name))
+            .where(Team.name == name)
         )
         res = await self.session.execute(stmt)
         return res.scalar_one_or_none()
 
     async def list_by_company(
             self,
-            company_name: str,
+            company_id: uuid.UUID,
             *,
             only_active: bool = True,
             limit: int = 100,
@@ -56,7 +57,7 @@ class TeamRepository(SQLAlchemyRepository):
                 selectinload(Team.invites),
                 selectinload(Team.companies),
             )
-            .where(Team.company_id == company_name)
+            .where(Team.companies.has(id=company_id))
         )
         if only_active:
             stmt = stmt.where(Team.is_active.is_(True))
@@ -67,7 +68,7 @@ class TeamRepository(SQLAlchemyRepository):
     async def create_team_atomic(
             self, *, company_id: UUID, name: str, owner_user_id: UUID | None
     ) -> Team:
-        exists = await self.get_by_name_in_company(name=name, company_id=company_id)
+        exists = await self.get_by_name_in_company(name=name)
         if exists:
             raise AlreadyExists(f"Team with name '{name}' already exists in company.")
         team = Team(company_id=company_id, name=name, owner_user_id=owner_user_id)
