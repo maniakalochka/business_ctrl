@@ -25,7 +25,6 @@ async def get_team(
     return team
 
 
-# FIX: always return empty list
 @teams_router.get("/", response_model=list[TeamRead])
 async def list_teams(
         company_name: str,
