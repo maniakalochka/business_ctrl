@@ -17,7 +17,7 @@ inv_router = APIRouter(tags=["invites"])
     status_code=status.HTTP_201_CREATED,
 )
 async def create_invite(
-        team_id: uuid.UUID,
+        team_name: str,
         data: InviteCreateRequest,
         principal: Principal = Depends(get_current_principal),
         svc: InvitesService = Depends(token_service_dep),
@@ -26,7 +26,7 @@ async def create_invite(
         raise HTTPException(status_code=403, detail="Недостаточно прав")
     try:
         invite = await svc.create_invite(
-            team_id=team_id,
+            team_id=team_name,
             email=data.email,  # type: ignore
             inviter_id=principal.sub,
         )
