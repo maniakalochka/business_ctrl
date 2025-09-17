@@ -28,9 +28,7 @@ class TeamRepository(SQLAlchemyRepository):
         res = await self.session.execute(stmt)
         return res.scalar_one_or_none()
 
-    async def get_by_name_in_company(
-            self, *, name: str, company_id: UUID
-    ) -> Team | None:
+    async def get_by_name_in_company(self, *, name: str) -> Team | None:
         stmt = (
             select(Team)
             .options(
@@ -38,7 +36,6 @@ class TeamRepository(SQLAlchemyRepository):
                 selectinload(Team.invites),
                 selectinload(Team.companies),
             )
-            .where(Team.company_id == company_id)
             .where(func.lower(Team.name) == func.lower(name))
         )
         res = await self.session.execute(stmt)
@@ -46,7 +43,7 @@ class TeamRepository(SQLAlchemyRepository):
 
     async def list_by_company(
             self,
-            company_id: UUID,
+            company_name: str,
             *,
             only_active: bool = True,
             limit: int = 100,
@@ -59,7 +56,7 @@ class TeamRepository(SQLAlchemyRepository):
                 selectinload(Team.invites),
                 selectinload(Team.companies),
             )
-            .where(Team.company_id == company_id)
+            .where(Team.company_id == company_name)
         )
         if only_active:
             stmt = stmt.where(Team.is_active.is_(True))

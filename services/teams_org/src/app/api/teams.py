@@ -3,7 +3,6 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.auth.deps import get_current_principal
-from app.models.companies import Company
 from app.models.teams import Team
 from app.schemas.teams import TeamCreate, TeamRead, TeamUpdate
 from app.services.deps import team_service_dep
@@ -12,14 +11,30 @@ from app.services.teams import TeamService
 teams_router = APIRouter(tags=["teams"])
 
 
-@teams_router.get("/{teams_id}", response_model=TeamRead)
+@teams_router.get("/{team_name}", response_model=TeamRead)
 async def get_team(
-        team: TeamRead = Depends(), svc: TeamService = Depends(team_service_dep)
-) -> Company:
-    team_data = await svc.get(team.id)
-    if not team_data:
+        team_name: str,
+        svc: TeamService = Depends(team_service_dep),
+        principal=Depends(get_current_principal),
+) -> TeamRead:
+    if not principal.role in {"admin", "manager"}:
+        raise HTTPException(status_code=403, detail="Not authorized to get team")
+    team = await svc.get_by_name(name=team_name)
+    if not team:
         raise HTTPException(status_code=404, detail="Team not found")
-    return team_data
+    return team
+
+
+@teams_router.get("/", response_model=list[TeamRead])
+async def list_teams(
+        company_name: str,
+        svc: TeamService = Depends(team_service_dep),
+        principal=Depends(get_current_principal),
+) -> list[Team]:
+    if not principal.role in {"admin", "manager"}:
+        raise HTTPException(status_code=403, detail="Not authorized to list teams")
+    teams = await svc.list_by_company()
+    return teams
 
 
 @teams_router.post("/", response_model=TeamRead, status_code=201)
@@ -28,7 +43,7 @@ async def create_team(
         team: TeamCreate,
         svc: TeamService = Depends(team_service_dep),
         principal=Depends(get_current_principal),
-) -> Team:
+) -> TeamRead:
     if principal.role not in ("admin", "manager"):
         raise HTTPException(status_code=403, detail="Not authorized to create team")
     from app.exceptions.exceptions import AlreadyExists
@@ -52,7 +67,7 @@ async def rename_team(
         new_name: TeamUpdate,
         svc: TeamService = Depends(team_service_dep),
         principal=Depends(get_current_principal),
-):
+) -> TeamRead:
     from app.exceptions.exceptions import AlreadyExists
 
     try:
@@ -64,6 +79,4 @@ async def rename_team(
     if principal.role not in ("admin", "manager"):
         raise HTTPException(status_code=403, detail="Not authorized to rename team")
     updated_team = await svc.rename(team_id=team_id, new_name=new_name)  # type: ignore
-    if not updated_team:
-        raise HTTPException(status_code=404, detail="Team not found")
     return updated_team
