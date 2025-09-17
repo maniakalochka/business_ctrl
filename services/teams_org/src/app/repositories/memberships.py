@@ -36,7 +36,7 @@ class MembershipRepository(SQLAlchemyRepository):
         return res.scalars().all()
 
     async def add_if_absent_atomic(
-            self, *, team_id: UUID, user_id: UUID, role: str | None = "member"
+        self, *, team_id: UUID, user_id: UUID, role: str | None = "member"
     ) -> bool:
         async with self.session.begin():
             stmt = (
@@ -58,7 +58,7 @@ class MembershipRepository(SQLAlchemyRepository):
             return res.rowcount() > 0
 
     async def change_role_atomic(
-            self, *, team_id: UUID, user_id: UUID, role: str | None
+        self, *, team_id: UUID, user_id: UUID, role: str | None
     ) -> None:
         async with self.session.begin():
             await self.session.execute(

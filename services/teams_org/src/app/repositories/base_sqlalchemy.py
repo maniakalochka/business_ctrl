@@ -12,8 +12,8 @@ class SQLAlchemyRepository(AbstractRepository):
         super().__init__(session, model)
 
     async def get(
-            self,
-            id_: uuid.UUID,
+        self,
+        id_: uuid.UUID,
     ) -> Any | None:
         stmt = select(self.model).where(self.model.id == id_)
         res = await self.session.execute(stmt)

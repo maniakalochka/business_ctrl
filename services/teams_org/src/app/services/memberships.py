@@ -8,22 +8,22 @@ from app.services.invites import InvitesService
 
 class MembershipService:
     def __init__(
-            self,
-            teams: TeamRepository,
-            memberships: MembershipRepository,
-            invites_svc: InvitesService,
+        self,
+        teams: TeamRepository,
+        memberships: MembershipRepository,
+        invites_svc: InvitesService,
     ):
         self._teams = teams
         self._memberships = memberships
         self._invites_svc = invites_svc
 
     async def add(
-            self,
-            *,
-            team_id: UUID,
-            user_id: UUID,
-            role: str | None = "member",
-            token: str | None = None
+        self,
+        *,
+        team_id: UUID,
+        user_id: UUID,
+        role: str | None = "member",
+        token: str | None = None
     ) -> bool:
         team = await self._teams.get(team_id)
         if not team:
@@ -43,7 +43,7 @@ class MembershipService:
         )
 
     async def change_role(
-            self, *, team_id: UUID, user_id: UUID, role: str | None
+        self, *, team_id: UUID, user_id: UUID, role: str | None
     ) -> None:
         team = await self._teams.get(team_id)
         if not team:

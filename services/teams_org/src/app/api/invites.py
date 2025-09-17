@@ -24,9 +24,10 @@ async def create_invite(
 ) -> InviteRead:
     if principal.role not in ("admin", "manager"):
         raise HTTPException(status_code=403, detail="Недостаточно прав")
-    team_id = uuid.UUID(data.team_id)
+    team_id = data.team_id
     try:
         invite = await svc.create_invite(
+            team_id=team_id,
             team_name=team_name,
             email=data.email,  # type: ignore
             inviter_id=principal.sub,

@@ -24,7 +24,7 @@ class CompanyRepository(SQLAlchemyRepository):
         return res.scalar_one_or_none()
 
     async def list(
-            self, *, limit: int = 100, offset: int = 0, is_active: bool | None = None
+        self, *, limit: int = 100, offset: int = 0, is_active: bool | None = None
     ) -> Sequence[Company]:
         stmt = select(Company)
         if is_active is not None:
