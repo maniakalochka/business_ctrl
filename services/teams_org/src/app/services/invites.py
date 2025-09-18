@@ -12,15 +12,21 @@ class InvitesService:
         self._teams = teams
         self._invites = invites
 
+    async def check_invite_accepted(self, token: str) -> bool:
+        invite = await self._invites.get_by_token(token)
+        if not invite:
+            raise NotFound("Инвайт не найден")
+        return invite.accepted
+
     async def create_invite(
-        self, *, team_id: uuid.UUID, email: str, inviter_id: uuid.UUID
+            self, *, team_id: uuid.UUID, team_name: str, email: str, inviter_id: uuid.UUID
     ) -> Invite:
-        team = await self._teams.get(team_id)
+        team = await self._teams.get_by_name_in_company(name=team_name)
         if not team:
             raise NotFound("Команда не найдена")
 
         token = generate_invite_token(
-            team_id=team_id, inviter_id=inviter_id, email=email
+            team_name=team_name, inviter_id=inviter_id, email=email
         )
 
         invite = Invite(

@@ -32,3 +32,8 @@ class SQLAlchemyRepository(AbstractRepository):
     async def delete(self, obj: Any) -> None:
         await self.session.delete(obj)
         await self.session.commit()
+
+    async def check_exists(self, obj: Any) -> bool:
+        stmt = select(self.model).where(self.model.id == obj.id)
+        res = await self.session.execute(stmt)
+        return res.scalar_one_or_none() is not None

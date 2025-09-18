@@ -1,6 +1,6 @@
+import uuid
 from abc import ABC, abstractmethod
 from typing import Any, Sequence
-import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,4 +24,8 @@ class AbstractRepository(ABC):
 
     @abstractmethod
     async def delete(self, obj: Any) -> None:
+        raise NotImplementedError("Subclasses must implement this method")
+
+    @abstractmethod
+    async def check_exists(self, obj: Any) -> bool:
         raise NotImplementedError("Subclasses must implement this method")

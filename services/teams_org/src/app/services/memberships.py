@@ -3,19 +3,33 @@ from uuid import UUID
 from app.exceptions.exceptions import NotFound
 from app.repositories.memberships import MembershipRepository
 from app.repositories.teams import TeamRepository
+from app.services.invites import InvitesService
 
 
 class MembershipService:
-    def __init__(self, teams: TeamRepository, memberships: MembershipRepository):
+    def __init__(
+        self,
+        teams: TeamRepository,
+        memberships: MembershipRepository,
+        invites_svc: InvitesService,
+    ):
         self._teams = teams
         self._memberships = memberships
+        self._invites_svc = invites_svc
 
     async def add(
-        self, *, team_id: UUID, user_id: UUID, role: str | None = "member"
+        self,
+        *,
+        team_id: UUID,
+        user_id: UUID,
+        role: str | None = "member",
+        token: str | None = None
     ) -> bool:
         team = await self._teams.get(team_id)
         if not team:
             raise NotFound("Команда не найдена")
+        if self._invites_svc.check_invite_accepted(token):
+            raise ValueError("Пользователь уже в команде")
         return await self._memberships.add_if_absent_atomic(
             team_id=team_id, user_id=user_id, role=role
         )

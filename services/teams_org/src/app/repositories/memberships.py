@@ -2,12 +2,12 @@ from typing import Sequence
 from uuid import UUID
 
 from sqlalchemy import delete, func, select, update
-from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.exceptions.exceptions import InvariantViolation
-from app.models.teams import Team
 from app.models.memberships import Membership
+from app.models.teams import Team
 from app.repositories.base_sqlalchemy import SQLAlchemyRepository
 
 
@@ -40,7 +40,7 @@ class MembershipRepository(SQLAlchemyRepository):
     ) -> bool:
         async with self.session.begin():
             stmt = (
-                pg_insert(Membership)
+                insert(Membership)
                 .values(team_id=team_id, user_id=user_id, role=role)
                 .on_conflict_do_nothing(
                     index_elements=[Membership.team_id, Membership.user_id]
@@ -55,7 +55,7 @@ class MembershipRepository(SQLAlchemyRepository):
                 Membership.team_id == team_id, Membership.user_id == user_id
             )
             res = await self.session.execute(stmt)
-            return res.rowcount > 0
+            return res.rowcount() > 0
 
     async def change_role_atomic(
         self, *, team_id: UUID, user_id: UUID, role: str | None
