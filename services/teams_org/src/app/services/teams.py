@@ -17,8 +17,11 @@ class TeamService:
         self._teams = teams
         self._memberships = memberships
 
-    async def get(self, id_: uuid.UUID):
+    async def get_company(self, id_: uuid.UUID):
         return await self._companies.get(id_)
+
+    async def get_team(self, id_: uuid.UUID):
+        return await self._teams.get(id_)
 
     async def create(
             self,

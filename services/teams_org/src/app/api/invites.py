@@ -17,7 +17,7 @@ inv_router = APIRouter(tags=["invites"])
     status_code=status.HTTP_201_CREATED,
 )
 async def create_invite(
-        team_name: str,
+        team_id: uuid.UUID,
         data: InviteCreateRequest,
         principal: Principal = Depends(get_current_principal),
         svc: InvitesService = Depends(token_service_dep),
@@ -28,8 +28,7 @@ async def create_invite(
     try:
         invite = await svc.create_invite(
             team_id=team_id,
-            team_name=team_name,
-            email=data.email,  # type: ignore
+            email=data.email,
             inviter_id=principal.sub,
         )
     except ValueError as e:
@@ -39,8 +38,8 @@ async def create_invite(
 
 @inv_router.post("/{invite_id}/accept", response_model=InviteRead)
 async def accept_invite(
-        team_id: uuid.UUID,  # параметр оставлен для совместимости с маршрутом, но не используется
-        invite_id: uuid.UUID,  # параметр оставлен для совместимости с маршрутом, но не используется
+        team_id: uuid.UUID,
+        invite_id: uuid.UUID,
         data: InviteAcceptRequest,
         principal: Principal = Depends(get_current_principal),
         svc: InvitesService = Depends(token_service_dep),

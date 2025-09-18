@@ -3,7 +3,6 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.auth.deps import get_current_principal
-from app.models.companies import Company
 from app.models.teams import Team
 from app.schemas.teams import TeamCreate, TeamRead, TeamUpdate
 from app.services.deps import team_service_dep
@@ -14,14 +13,17 @@ teams_router = APIRouter(tags=["teams"])
 
 @teams_router.get("/{teams_id}", response_model=TeamRead)
 async def get_team(
-        company_id: uuid.UUID = Depends(get_current_principal),
-        team: TeamRead = Depends(),
+        company_id: uuid.UUID,
+        team_id: uuid.UUID,
         svc: TeamService = Depends(team_service_dep),
-) -> Company:
-    team_data = await svc.get(team.id)
-    if not team_data:
-        raise HTTPException(status_code=404, detail="Team not found")
-    return team_data
+) -> Team:
+    company = await svc.get_company(id_=company_id)
+    if not company:
+        raise HTTPException(status_code=404, detail="Company not found for given ID")
+    team = await svc.get_team(id_=team_id)
+    if not team or team.company_id != company_id:
+        raise HTTPException(status_code=404, detail="Team not found for given ID")
+    return team
 
 
 @teams_router.post("/", response_model=TeamRead, status_code=201)
@@ -51,7 +53,7 @@ async def rename_team(
         svc: TeamService = Depends(team_service_dep),
         principal=Depends(get_current_principal),
 ):
-    team = await svc.get(team_id)
+    team = await svc.get_team(team_id)
     if not team:
         raise HTTPException(status_code=404, detail="Team not found")
     if principal.role not in ("admin", "manager"):
