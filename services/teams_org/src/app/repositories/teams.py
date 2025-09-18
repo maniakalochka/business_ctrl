@@ -1,5 +1,5 @@
+import uuid
 from typing import Sequence
-from uuid import UUID
 
 from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError
@@ -15,7 +15,7 @@ class TeamRepository(SQLAlchemyRepository):
     def __init__(self, session: AsyncSession):
         super().__init__(session, Team)
 
-    async def get(self, team_id: UUID) -> Team | None:
+    async def get(self, team_id: uuid.UUID) -> Team | None:
         stmt = (
             select(Team)
             .options(
@@ -29,7 +29,7 @@ class TeamRepository(SQLAlchemyRepository):
         return res.scalar_one_or_none()
 
     async def get_by_name_in_company(
-        self, *, name: str, company_id: UUID
+            self, *, name: str, company_id: uuid.UUID
     ) -> Team | None:
         stmt = (
             select(Team)
@@ -45,12 +45,12 @@ class TeamRepository(SQLAlchemyRepository):
         return res.scalar_one_or_none()
 
     async def list_by_company(
-        self,
-        company_id: UUID,
-        *,
-        only_active: bool = True,
-        limit: int = 100,
-        offset: int = 0
+            self,
+            company_id: uuid.UUID,
+            *,
+            only_active: bool = True,
+            limit: int = 100,
+            offset: int = 0
     ) -> Sequence[Team]:
         stmt = (
             select(Team)
@@ -68,7 +68,7 @@ class TeamRepository(SQLAlchemyRepository):
         return res.scalars().all()
 
     async def create_team_atomic(
-        self, *, company_id: UUID, name: str, owner_user_id: UUID | None
+            self, *, company_id: uuid.UUID, name: str, owner_user_id: uuid.UUID | None
     ) -> Team:
         team = Team(company_id=company_id, name=name, owner_user_id=owner_user_id)
         try:
@@ -79,7 +79,7 @@ class TeamRepository(SQLAlchemyRepository):
         except IntegrityError as e:
             raise AlreadyExists from e
 
-    async def rename_atomic(self, *, team_id: UUID, new_name: str) -> None:
+    async def rename_atomic(self, *, team_id: uuid.UUID, new_name: str) -> None:
         try:
             async with self.session.begin():
                 await self.session.execute(
@@ -88,7 +88,7 @@ class TeamRepository(SQLAlchemyRepository):
         except IntegrityError as e:
             raise AlreadyExists from e
 
-    async def set_active(self, team_id: UUID, is_active: bool) -> None:
+    async def set_active(self, team_id: uuid.UUID, is_active: bool) -> None:
         async with self.session.begin():
             await self.session.execute(
                 update(Team).where(Team.id == team_id).values(is_active=is_active)
