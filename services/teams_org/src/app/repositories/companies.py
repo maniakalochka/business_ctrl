@@ -1,3 +1,4 @@
+import uuid
 from typing import Sequence
 from uuid import UUID
 
@@ -25,7 +26,7 @@ class CompanyRepository(SQLAlchemyRepository):
         return res.scalar_one_or_none()
 
     async def list(
-        self, *, limit: int = 100, offset: int = 0, is_active: bool | None = None
+            self, *, limit: int = 100, offset: int = 0, is_active: bool | None = None
     ) -> Sequence[Company]:
         stmt = select(Company)
         if is_active is not None:
@@ -42,11 +43,11 @@ class CompanyRepository(SQLAlchemyRepository):
         except IntegrityError as e:
             raise AlreadyExists from e
 
-    async def set_active_atomic(self, company_name: str, is_active: bool) -> None:
+    async def set_active_atomic(self, company_id: uuid.UUID, is_active: bool) -> None:
         async with self.session.begin():
             stmt = (
                 update(Company)
-                .where(Company.name == company_name)
+                .where(Company.id == company_id)
                 .values(is_active=is_active)
             )
             await self.session.execute(stmt)

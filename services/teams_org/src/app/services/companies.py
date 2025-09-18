@@ -1,11 +1,12 @@
+import uuid
 from typing import Sequence
 from uuid import UUID
 
 from app.exceptions.exceptions import NotFound
-from app.repositories.companies import CompanyRepository
-from app.repositories.teams import TeamRepository
 from app.models.companies import Company
 from app.models.teams import Team
+from app.repositories.companies import CompanyRepository
+from app.repositories.teams import TeamRepository
 
 
 class CompanyService:
@@ -13,38 +14,36 @@ class CompanyService:
         self._companies = companies
         self._teams = teams
 
-    async def get(self, name: str) -> Company | None:
-        return await self._companies.get_by_name(name=name)
+    async def get(self, company_id: uuid.UUID) -> Company | None:
+        return await self._companies.get(company_id=company_id)
 
     async def create(self, *, name: str, owner_id: UUID) -> Company:
         return await self._companies.create_atomic(name=name, owner_id=owner_id)
 
-    async def activate(self, company_name: str) -> None:
-        company = await self._companies.get_by_name(name=company_name)
+    async def activate(self, company_id: uuid.UUID) -> None:
+        company = await self._companies.get(company_id=company_id)
         if not company:
             raise NotFound("Компания не найдена")
-        await self._companies.set_active_atomic(
-            company_name=company_name, is_active=True
-        )
+        await self._companies.set_active_atomic(company_id=company_id, is_active=True)
 
-    async def deactivate(self, company_name: str) -> None:
-        company = await self._companies.get_by_name(name=company_name)
+    async def deactivate(self, company_id: uuid.UUID) -> None:
+        company = await self._companies.get(company_id=company_id)
         if not company:
             raise NotFound("Компания не найдена")
-        await self._companies.set_active_atomic(company_name, False)
+        await self._companies.set_active_atomic(company_id, False)
 
     async def list(
-        self, *, limit: int = 100, offset: int = 0, is_active: bool | None = None
+            self, *, limit: int = 100, offset: int = 0, is_active: bool | None = None
     ) -> Sequence:
         return await self._companies.list(is_active=is_active)
 
     async def list_teams(
-        self,
-        company_id: UUID,
-        *,
-        only_active: bool = True,
-        limit: int = 100,
-        offset: int = 0,
+            self,
+            company_id: UUID,
+            *,
+            only_active: bool = True,
+            limit: int = 100,
+            offset: int = 0,
     ) -> Sequence[Team]:
         company = await self._companies.get(company_id)
         if not company:

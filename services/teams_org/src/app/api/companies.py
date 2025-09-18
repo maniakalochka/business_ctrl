@@ -1,24 +1,25 @@
+import uuid
+
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.services.companies import CompanyService
+from app.auth.deps import get_current_principal
+from app.exceptions.exceptions import AlreadyExists
 from app.schemas.companies import CompanyRead
 from app.schemas.principal import Principal
-from app.auth.deps import get_current_principal
+from app.services.companies import CompanyService
 from app.services.deps import company_service_dep
-from app.exceptions.exceptions import AlreadyExists
-
 
 cmp_router = APIRouter(tags=["companies"])
 
 
 @cmp_router.post("/", response_model=CompanyRead, status_code=status.HTTP_201_CREATED)
 async def create_company(
-    name: str,
-    principal: Principal = Depends(get_current_principal),
-    svc: CompanyService = Depends(company_service_dep),
+        name: str,
+        principal: Principal = Depends(get_current_principal),
+        svc: CompanyService = Depends(company_service_dep),
 ) -> CompanyRead:
     if "companies.write" not in principal.scope and (
-        principal.role not in {"admin", "manager"}
+            principal.role not in {"admin", "manager"}
     ):
         raise HTTPException(status_code=403, detail="Insufficient scope")
     try:
@@ -28,13 +29,13 @@ async def create_company(
     return CompanyRead.model_validate(company)
 
 
-@cmp_router.get("/{company_name}", response_model=CompanyRead)
+@cmp_router.get("/{company_id}", response_model=CompanyRead)
 async def read_company(
-    company_name: str,
-    principal: Principal = Depends(get_current_principal),
-    svc: CompanyService = Depends(company_service_dep),
+        company_id: uuid.UUID,
+        principal: Principal = Depends(get_current_principal),
+        svc: CompanyService = Depends(company_service_dep),
 ) -> CompanyRead:
-    company = await svc.get(name=company_name)
+    company = await svc.get(company_id=company_id)
     if not company:
         raise HTTPException(status_code=404, detail="Company not found")
     elif principal.role not in {"admin", "manager"}:
@@ -48,15 +49,15 @@ async def read_company(
     status_code=status.HTTP_200_OK,
 )
 async def deactivate_company(
-    company_name: str,
-    principal: Principal = Depends(get_current_principal),
-    svc: CompanyService = Depends(company_service_dep),
+        company_id: uuid.UUID,
+        principal: Principal = Depends(get_current_principal),
+        svc: CompanyService = Depends(company_service_dep),
 ) -> None:
     if "companies.write" not in principal.scope and (
-        principal.role not in {"admin", "manager"}
+            principal.role not in {"admin", "manager"}
     ):
         raise HTTPException(status_code=403, detail="Insufficient scope")
-    await svc.deactivate(company_name=company_name)
+    await svc.deactivate(company_id=company_id)
 
 
 @cmp_router.patch(
@@ -65,12 +66,12 @@ async def deactivate_company(
     status_code=status.HTTP_200_OK,
 )
 async def activate_company(
-    company_name: str,
-    principal: Principal = Depends(get_current_principal),
-    svc: CompanyService = Depends(company_service_dep),
+        company_id: uuid.UUID,
+        principal: Principal = Depends(get_current_principal),
+        svc: CompanyService = Depends(company_service_dep),
 ) -> None:
     if "companies.write" not in principal.scope and (
-        principal.role not in {"admin", "manager"}
+            principal.role not in {"admin", "manager"}
     ):
         raise HTTPException(status_code=403, detail="Insufficient scope")
-    await svc.activate(company_name=company_name)
+    await svc.activate(company_id=company_id)
