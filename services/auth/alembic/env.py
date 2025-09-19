@@ -16,7 +16,7 @@ from app.db.base import Base  # type: ignore
 from app.models.users import User  # type: ignore
 
 config = context.config
-DB_URL = getattr(settings, "AUTH_DB_URL", None) or getattr(settings, "TEST_AUTH_DB_URL", None)
+DB_URL = getattr(settings, "AUTH_DB_URL", None)
 if DB_URL:
     config.set_main_option("sqlalchemy.url", DB_URL)
 
@@ -43,6 +43,7 @@ def run_migrations_offline() -> None:
     with context.begin_transaction():
         context.run_migrations()
 
+
 def do_run_migrations(connection):
     context.configure(
         connection=connection,
@@ -53,14 +54,17 @@ def do_run_migrations(connection):
     with context.begin_transaction():
         context.run_migrations()
 
+
 async def run_migrations_online() -> None:
     url = config.get_main_option("sqlalchemy.url") or DB_URL
     if url and url.startswith("postgresql+asyncpg"):
         url = url.replace("postgresql+asyncpg", "postgresql+psycopg2")
     from sqlalchemy import create_engine
+
     connectable = create_engine(url, poolclass=pool.NullPool)  # type: ignore
     with connectable.connect() as connection:
         do_run_migrations(connection)
+
 
 if context.is_offline_mode():
     run_migrations_offline()

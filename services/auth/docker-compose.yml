@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    container_name: auth_app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "8000:8000"
+    restart: always
+
+  db:
+    image: postgres:15-alpine
+    container_name: auth_db
+    environment:
+      POSTGRES_DB: ${AUTH_DB_URL}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: auth_redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+volumes:
+  pgdata:
+  redis_data:
+
+
