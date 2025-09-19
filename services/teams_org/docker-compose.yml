@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    container_name: teams_org_app
+    env_file:
+      - .env
+    depends_on:
+      - db
+    ports:
+      - "8081:8081"
+    restart: always
+
+  db:
+    image: postgres:15-alpine
+    container_name: teams_org_db
+    environment:
+      POSTGRES_DB: ${COMPANY_DB_URL}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5433:5433"
+    restart: always
+
+
+volumes:
+  pgdata:
+
+

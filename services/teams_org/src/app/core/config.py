@@ -4,7 +4,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     # Database
     COMPANY_DB_URL: str
-    TEST_COMPANY_DB_URL: str
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
 
     # Security
     JWT_SECRET: str

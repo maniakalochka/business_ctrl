@@ -10,6 +10,8 @@ class Settings(BaseSettings):
             + "postgres:password@localhost/"
             + "fastapi_users_db_sqlalchemy"
     )
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
 
     MODE: Literal["DEV", "TEST"] = "TEST"
 
