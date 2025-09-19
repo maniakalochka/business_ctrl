@@ -19,7 +19,7 @@ class InvitesService:
         return invite.accepted
 
     async def create_invite(
-            self, *, team_id: uuid.UUID, email: str, inviter_id: uuid.UUID
+        self, *, team_id: uuid.UUID, email: str, inviter_id: uuid.UUID
     ) -> Invite:
         team = await self._teams.get(team_id)
         if not team:

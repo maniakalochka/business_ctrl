@@ -8,10 +8,10 @@ from app.repositories.teams import TeamRepository
 
 class TeamService:
     def __init__(
-            self,
-            companies: CompanyRepository,
-            teams: TeamRepository,
-            memberships: MembershipRepository,
+        self,
+        companies: CompanyRepository,
+        teams: TeamRepository,
+        memberships: MembershipRepository,
     ):
         self._companies = companies
         self._teams = teams
@@ -24,11 +24,11 @@ class TeamService:
         return await self._teams.get(id_)
 
     async def create(
-            self,
-            *,
-            company_id: uuid.UUID,
-            name: str,
-            owner_user_id: uuid.UUID | None = None
+        self,
+        *,
+        company_id: uuid.UUID,
+        name: str,
+        owner_user_id: uuid.UUID | None = None
     ):
         company = await self._companies.get(company_id)
         if not company:
@@ -50,12 +50,12 @@ class TeamService:
         await self._memberships.archive_team_if_empty_atomic(team_id)
 
     async def list_by_company(
-            self,
-            company_id: uuid.UUID,
-            *,
-            only_active: bool = True,
-            limit: int = 100,
-            offset: int = 0
+        self,
+        company_id: uuid.UUID,
+        *,
+        only_active: bool = True,
+        limit: int = 100,
+        offset: int = 0
     ):
         company = await self._companies.get(company_id)
         if not company:

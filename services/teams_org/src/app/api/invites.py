@@ -17,10 +17,10 @@ inv_router = APIRouter(tags=["invites"])
     status_code=status.HTTP_201_CREATED,
 )
 async def create_invite(
-        team_id: uuid.UUID,
-        data: InviteCreateRequest,
-        principal: Principal = Depends(get_current_principal),
-        svc: InvitesService = Depends(token_service_dep),
+    team_id: uuid.UUID,
+    data: InviteCreateRequest,
+    principal: Principal = Depends(get_current_principal),
+    svc: InvitesService = Depends(token_service_dep),
 ) -> InviteRead:
     if principal.role not in ("admin", "manager"):
         raise HTTPException(status_code=403, detail="Недостаточно прав")
@@ -38,11 +38,11 @@ async def create_invite(
 
 @inv_router.post("/{invite_id}/accept", response_model=InviteRead)
 async def accept_invite(
-        team_id: uuid.UUID,
-        invite_id: uuid.UUID,
-        data: InviteAcceptRequest,
-        principal: Principal = Depends(get_current_principal),
-        svc: InvitesService = Depends(token_service_dep),
+    team_id: uuid.UUID,
+    invite_id: uuid.UUID,
+    data: InviteAcceptRequest,
+    principal: Principal = Depends(get_current_principal),
+    svc: InvitesService = Depends(token_service_dep),
 ) -> InviteRead:
     try:
         invite = await svc.accept_invite(token=data.token, user_id=principal.sub)

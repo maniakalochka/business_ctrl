@@ -13,9 +13,9 @@ teams_router = APIRouter(tags=["teams"])
 
 @teams_router.get("/{teams_id}", response_model=TeamRead)
 async def get_team(
-        company_id: uuid.UUID,
-        team_id: uuid.UUID,
-        svc: TeamService = Depends(team_service_dep),
+    company_id: uuid.UUID,
+    team_id: uuid.UUID,
+    svc: TeamService = Depends(team_service_dep),
 ) -> Team:
     company = await svc.get_company(id_=company_id)
     if not company:
@@ -28,10 +28,10 @@ async def get_team(
 
 @teams_router.post("/", response_model=TeamRead, status_code=201)
 async def create_team(
-        company_id: uuid.UUID,
-        team: TeamCreate,
-        svc: TeamService = Depends(team_service_dep),
-        principal=Depends(get_current_principal),
+    company_id: uuid.UUID,
+    team: TeamCreate,
+    svc: TeamService = Depends(team_service_dep),
+    principal=Depends(get_current_principal),
 ) -> Team:
     if principal.role not in ("admin", "manager"):
         raise HTTPException(status_code=403, detail="Not authorized to create team")
@@ -48,10 +48,10 @@ async def create_team(
     "/{team_id}/rename", response_model=TeamRead, status_code=status.HTTP_200_OK
 )
 async def rename_team(
-        team_id: uuid.UUID,
-        new_name: TeamUpdate,
-        svc: TeamService = Depends(team_service_dep),
-        principal=Depends(get_current_principal),
+    team_id: uuid.UUID,
+    new_name: TeamUpdate,
+    svc: TeamService = Depends(team_service_dep),
+    principal=Depends(get_current_principal),
 ):
     team = await svc.get_team(team_id)
     if not team:
