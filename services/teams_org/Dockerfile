@@ -20,6 +20,4 @@ ENV PYTHONPATH=/app/src/
 COPY . /app/
 
 RUN poetry install --no-root
-CMD ["poetry", "run", "alembic", "upgrade", "head"]
-CMD ["poetry", "run", "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "src.app.main:app", "-b", "0.0.0.0:8081"]
-EXPOSE 8081
+ENTRYPOINT ["/app/entrypoint.sh"]

@@ -1,18 +1,18 @@
 version: '3.9'
 
 services:
-  app:
+  tcapp:
     build: .
     container_name: teams_org_app
     env_file:
       - .env
     depends_on:
-      - db
+      - tcdb
     ports:
       - "8081:8081"
     restart: always
 
-  db:
+  tcdb:
     image: postgres:15-alpine
     container_name: teams_org_db
     environment:
