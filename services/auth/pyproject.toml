@@ -26,7 +26,8 @@ dependencies = [
     "pytest-asyncio (>=1.1.0,<2.0.0)",
     "httpx (>=0.28.1,<0.29.0)",
     "asgi-lifespan (>=2.1.0,<3.0.0)",
-    "gunicorn (>=23.0.0,<24.0.0)"
+    "gunicorn (>=23.0.0,<24.0.0)",
+    "sqladmin (>=0.21.0,<0.22.0)"
 ]
 
 
