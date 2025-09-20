@@ -25,7 +25,8 @@ dependencies = [
     "python-multipart (>=0.0.20,<0.0.21)",
     "pydantic (<2.10)",
     "gunicorn (>=23.0.0,<24.0.0)",
-    "sqladmin (>=0.21.0,<0.22.0)"
+    "sqladmin (>=0.21.0,<0.22.0)",
+    "itsdangerous (>=2.2.0,<3.0.0)"
 ]
 
 
