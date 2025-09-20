@@ -15,10 +15,11 @@ RUN curl -sSL https://install.python-poetry.org | python3 - \
 
 WORKDIR /app
 
-ENV PYTHONPATH=/app/src/
+ENV PYTHONPATH=/app/src
+ENV POETRY_VIRTUALENVS_CREATE=false
 
 COPY . /app/
 
+
 RUN poetry install --no-root
-CMD ["poetry", "run", "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "src.app.main:app", "-b", "0.0.0.0:8000"]
-EXPOSE 8000
+ENTRYPOINT ["/app/entrypoint.sh"]
