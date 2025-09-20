@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class Invite(Base):
     __tablename__ = "invites"
 
-    email: Mapped[str] = mapped_column(nullable=False, index=True)
+    email: Mapped[str] = mapped_column(nullable=False, index=True)  # target email
     team_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("teams.id", ondelete="CASCADE"), index=True
     )

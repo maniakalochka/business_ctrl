@@ -7,6 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.invites import Invite
 from app.repositories.base_sqlalchemy import SQLAlchemyRepository
 
+from app.exceptions.exceptions import AlreadyExists
+
 
 class InviteRepository(SQLAlchemyRepository):
     def __init__(self, session: AsyncSession):
@@ -14,6 +16,8 @@ class InviteRepository(SQLAlchemyRepository):
 
     async def create_atomic(self, *, email: str, team_id: uuid.UUID) -> Invite:
         exists = await self.check_exists(Invite)
+        if exists:
+            raise AlreadyExists("Invite already exists")
         async with self.session.begin():
             invite = Invite(email=email, team_id=team_id)
             self.session.add(invite)

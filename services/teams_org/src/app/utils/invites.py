@@ -7,12 +7,12 @@ from app.core.config import settings
 
 
 def generate_invite_token(
-    *, team_id: uuid.UUID, inviter_id: uuid.UUID, email: str
+        *, team_id: uuid.UUID, inviter_id: uuid.UUID, email: str
 ) -> str:
     now = int(time.time())
     payload = {
         "sub": str(uuid.uuid4()),
-        "team_id": team_id,
+        "team_id": str(team_id),
         "inviter_id": str(inviter_id),
         "email": email,
         "iat": now,

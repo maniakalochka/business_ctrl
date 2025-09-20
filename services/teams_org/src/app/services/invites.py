@@ -1,10 +1,11 @@
 import uuid
 
-from app.exceptions.exceptions import NotFound
 from app.models.invites import Invite
 from app.repositories.invites import InviteRepository
-from app.repositories.teams import TeamRepository
 from app.utils.invites import generate_invite_token, verify_invite_token
+
+from app.exceptions.exceptions import NotFound
+from app.repositories.teams import TeamRepository
 
 
 class InvitesService:
@@ -30,7 +31,7 @@ class InvitesService:
         )
 
         invite = Invite(
-            email=email,
+            target_email=email,
             team_id=team_id,
             inviter_id=inviter_id,
             token=token,
