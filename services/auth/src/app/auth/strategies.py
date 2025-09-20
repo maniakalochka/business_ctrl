@@ -1,15 +1,15 @@
 import time
 import uuid
+from typing import Any, Dict, Optional
 
 import jwt
-from typing import Any, Dict, Optional
-from fastapi_users.authentication import JWTStrategy
-from fastapi_users import models
-from app.core.config import settings
-from app.services.claims_client import load_org_claims
 from app.models.users import User
-
+from app.services.claims_client import load_org_claims
 from fastapi import Request
+from fastapi_users import models
+from fastapi_users.authentication import JWTStrategy
+
+from app.core.config import settings
 
 
 class IssuerJWTStrategy(JWTStrategy[models.UP, models.ID]):
@@ -30,8 +30,6 @@ class IssuerJWTStrategy(JWTStrategy[models.UP, models.ID]):
         }
 
         org = None
-        # fastapi-users login calls write_token(user) without request,
-        # so load org claims only if request is provided
         if request is not None:
             org = await load_org_claims(user.id, request)  # type: ignore
             if org:
@@ -41,17 +39,6 @@ class IssuerJWTStrategy(JWTStrategy[models.UP, models.ID]):
                     payload["teams_truncated"] = org.get("teams_truncated", False)
 
         return jwt.encode(payload, self.secret, algorithm="HS256")
-
-    # async def read_token(self, token: str, token_audience: Optional[str] = None) -> Dict[str, Any]:  # type: ignore
-    #     return jwt.decode(
-    #         token,
-    #         self.secret,  # type: ignore
-    #         algorithms=["HS256"],
-    #         audience=self.token_audience,
-    #         issuer=settings.JWT_ISSUER,
-    #         options={"require": ["exp", "iat"]},
-    #     )
-    #
 
 
 def get_jwt_strategy() -> JWTStrategy[User, uuid.UUID]:
