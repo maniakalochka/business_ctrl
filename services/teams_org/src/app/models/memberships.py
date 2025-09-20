@@ -23,7 +23,6 @@ class MembershipStatus(str, enum.Enum):
 
 class TeamRole(str, enum.Enum):
     OWNER = "owner"
-    ADMIN = "admin"
     MEMBER = "member"
     VIEWER = "viewer"
 
