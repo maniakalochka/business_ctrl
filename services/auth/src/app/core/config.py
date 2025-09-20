@@ -5,11 +5,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # Database
-    AUTH_DB_URL: str = (
-        "postgresql+asyncpg://"
-        + "postgres:password@localhost/"
-        + "fastapi_users_db_sqlalchemy"
-    )
+    AUTH_DB_URL: str
+
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
 
