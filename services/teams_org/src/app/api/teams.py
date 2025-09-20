@@ -36,12 +36,15 @@ async def create_team(
     if principal.role not in ("admin", "manager"):
         raise HTTPException(status_code=403, detail="Not authorized to create team")
 
-    new_team = await svc.create(
-        company_id=company_id,
-        name=team.name,
-        owner_user_id=team.owner_user_id,
-    )
-    return new_team
+    try:
+        new_team = await svc.create(
+            company_id=company_id,
+            name=team.name,
+            owner_user_id=team.owner_user_id,
+        )
+        return new_team
+    except Exception as e:
+        raise HTTPException(status_code=404, detail="Company not found")
 
 
 @teams_router.patch(
